@@ -16,7 +16,18 @@ with types;
 
   config = mkIf config.telemetry.netdata.enable {
 
+    # https://docs.netdata.cloud/daemon/config/
+    services.netdata = {
+      enable = lib.mkDefault true;
+      config = {
+        global = {
+          "memory mode" = "ram";
+        };
+      };
+    };
+
     # netdata sink
+    # todo: only if opentelemetry is enabled
     services.opentelemetry-collector.settings.receivers.prometheus.config.scrape_configs = [
       {
         job_name = "netdata";
@@ -27,14 +38,5 @@ with types;
       }
     ];
 
-    # https://docs.netdata.cloud/daemon/config/
-    services.netdata = {
-      enable = lib.mkDefault true;
-      config = {
-        global = {
-          "memory mode" = "ram";
-        };
-      };
-    };
   };
 }
