@@ -16,26 +16,29 @@ with types;
 
     (mkIf config.telemetry.prometheus.exporters.zfs.enable {
 
-      # todo: why
+      # todo: prometheus or telegraf?
       services.telegraf.extraConfig.inputs.zfs = { };
 
-      services.prometheus.exporters.zfs.enable = true;
+      # Prometheus
+      # ----------
+      # fixme: this not working, because I get the same labels and values over and over again, which spams the logs.
+      #services.prometheus.exporters.zfs.enable = true;
 
       # todo :  only when opentelemetry is enabled
-      services.opentelemetry-collector.settings = {
-        receivers.prometheus.config.scrape_configs = [
-          {
-            job_name = "zfs";
-            scrape_interval = "10s";
-            static_configs = [
-              {
-                targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.zfs.port}" ];
-              }
-            ];
-          }
-        ];
-        service.pipelines.metrics.receivers = [ "prometheus" ];
-      };
+      #services.opentelemetry-collector.settings = {
+      #  receivers.prometheus.config.scrape_configs = [
+      #    {
+      #      job_name = "zfs";
+      #      scrape_interval = "10s";
+      #      static_configs = [
+      #        {
+      #          targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.zfs.port}" ];
+      #        }
+      #      ];
+      #    }
+      #  ];
+      #  service.pipelines.metrics.receivers = [ "prometheus" ];
+      #};
 
     })
   ];
