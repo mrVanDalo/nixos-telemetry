@@ -46,7 +46,7 @@ in
     (mkIf config.telemetry.opentelemetry.enable {
       services.opentelemetry-collector = {
         enable = true;
-        package = pkgs.opentelemetry-collector-contrib;
+        package = lib.mkDefault pkgs.opentelemetry-collector-contrib;
       };
 
       # some handy scripts
