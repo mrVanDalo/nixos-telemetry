@@ -1,8 +1,9 @@
 {
   imports = [
     ./logs-promtail.nix
+    ./metrics-exporter-procstat.nix
+    ./metrics-exporter-zfs.nix
     ./metrics-netdata.nix
-    ./metrics-prometheus-exporter-zfs.nix
     ./metrics-telegraf.nix
   ];
 }

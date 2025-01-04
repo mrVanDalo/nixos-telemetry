@@ -7,17 +7,20 @@
 with lib;
 with types;
 {
-  options.telemetry.prometheus.exporters.zfs.enable = mkOption {
+  options.telemetry.exporters.zfs.enable = mkOption {
     type = lib.types.bool;
     default = config.telemetry.metrics.enable;
   };
 
   config = mkMerge [
 
-    (mkIf config.telemetry.prometheus.exporters.zfs.enable {
+    (mkIf config.telemetry.exporters.zfs.enable {
 
       # todo: prometheus or telegraf?
-      services.telegraf.extraConfig.inputs.zfs = { };
+      services.telegraf.extraConfig.inputs.zfs = {
+        poolMetrics = lib.mkDefault true;
+        datasetMetrics = lib.mkDefault true;
+      };
 
       # Prometheus
       # ----------
