@@ -45,6 +45,7 @@ in
           inputs = {
             cpu = { };
             diskio = { };
+            disk = { };
             processes = { };
             system = { };
             systemd_units = { };
