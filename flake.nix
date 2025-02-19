@@ -2,10 +2,11 @@
   description = "NixOS Telemetry Flake";
 
   inputs = {
+    devshell.url = "github:numtide/devshell";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
   };
 
   outputs =
@@ -21,23 +22,51 @@
         "aarch64-darwin"
         "x86_64-darwin"
       ];
+
       perSystem =
         {
-          config,
-          self',
-          inputs',
+          lib,
           pkgs,
+          self',
           system,
           ...
         }:
         {
+          apps =
+            let
+
+              optionsDoc = pkgs.nixosOptionsDoc {
+                options = self.nixosConfigurations.example.options.telemetry;
+              };
+
+              appCommand = name: command: {
+                "${name}" = {
+                  type = "app";
+                  program = pkgs.writers.writeBashBin "${name}" command;
+                };
+              };
+
+            in
+            { }
+            // (appCommand "markdown" "cat ${optionsDoc.optionsCommonMark}")
+            // (appCommand "json-full" "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json")
+            // (appCommand "asciidoc" "cat ${optionsDoc.optionsAsciiDoc}")
+            // (appCommand "json" "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json | jq 'with_entries(.value = .value.description)'");
+
         };
+
       flake = {
         # The usual flake attributes can be defined here, including system-
         # agnostic ones like nixosModule and system-enumerating ones, although
         # those are more easily expressed in perSystem.
         nixosModules.telemetry = ./modules;
         nixosModules.default = self.nixosModules.telemetry;
+
+        nixosConfigurations.example = inputs.nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [ self.nixosModules.telemetry ];
+        };
+
       };
     };
 }

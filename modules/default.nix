@@ -15,17 +15,17 @@ with types;
     metrics.enable = mkOption {
       type = bool;
       default = config.telemetry.enable;
+      description = "todo";
     };
     logs.enable = mkOption {
       type = bool;
       default = config.telemetry.enable;
+      description = "todo";
     };
   };
 
   imports = [
-
     ./opentelemetry.nix
-
     ./exporters
     ./receivers
   ];

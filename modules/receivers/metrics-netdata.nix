@@ -11,6 +11,7 @@ with types;
     enable = mkOption {
       type = bool;
       default = config.telemetry.metrics.enable;
+      description = "todo";
     };
   };
 

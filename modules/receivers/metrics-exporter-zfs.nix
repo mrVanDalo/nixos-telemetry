@@ -10,6 +10,7 @@ with types;
   options.telemetry.exporters.zfs.enable = mkOption {
     type = lib.types.bool;
     default = config.telemetry.metrics.enable;
+    description = "todo";
   };
 
   config = mkMerge [

@@ -14,6 +14,7 @@ in
     enable = mkOption {
       type = lib.types.bool;
       default = config.telemetry.metrics.enable;
+      description = "todo";
     };
     influxDBPort = mkOption {
       type = int;
@@ -50,6 +51,10 @@ in
             system = { };
             systemd_units = { };
             ping = [ { urls = [ "10.100.0.1" ]; } ]; # actually important to make machine visible over wireguard
+
+            # services
+            # todo : add all kinds of services here
+            #docker = (lib.mkIf config.components.virtualisation.docker.enable (lib.mkDefault {}));
           };
         };
       };
