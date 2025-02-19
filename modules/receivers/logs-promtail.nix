@@ -9,7 +9,6 @@ in
     enable = mkOption {
       type = lib.types.bool;
       default = config.telemetry.logs.enable;
-      description = "todo";
     };
     port = mkOption {
       type = int;

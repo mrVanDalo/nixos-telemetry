@@ -9,12 +9,10 @@ in
     enable = mkOption {
       type = lib.types.bool;
       default = config.telemetry.metrics.enable;
-      description = "todo";
     };
     port = mkOption {
       type = int;
       default = 8090;
-      description = "port to provide Prometheus export";
     };
   };
 

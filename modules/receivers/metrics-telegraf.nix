@@ -14,12 +14,10 @@ in
     enable = mkOption {
       type = lib.types.bool;
       default = config.telemetry.metrics.enable;
-      description = "todo";
     };
     influxDBPort = mkOption {
       type = int;
       default = 8088;
-      description = "Port to listen on influxDB input";
     };
   };
 

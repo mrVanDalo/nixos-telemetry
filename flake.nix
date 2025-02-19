@@ -37,6 +37,7 @@
 
               optionsDoc = pkgs.nixosOptionsDoc {
                 options = self.nixosConfigurations.example.options.telemetry;
+                warningsAreErrors = false;
               };
 
               appCommand = name: command: {
@@ -51,7 +52,11 @@
             // (appCommand "markdown" "cat ${optionsDoc.optionsCommonMark}")
             // (appCommand "json-full" "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json")
             // (appCommand "asciidoc" "cat ${optionsDoc.optionsAsciiDoc}")
-            // (appCommand "json" "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json | jq 'with_entries(.value = .value.description)'");
+            // (appCommand "json" "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json | jq 'with_entries(.value = .value.description)'")
+            // (appCommand "undocumented" ''
+              cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json | \
+                jq -r 'to_entries | map(select(.value.description == "This option has no description.")) | .[].key'
+            '');
 
         };
 
