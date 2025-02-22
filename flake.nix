@@ -65,11 +65,20 @@
         # agnostic ones like nixosModule and system-enumerating ones, although
         # those are more easily expressed in perSystem.
         nixosModules.telemetry = ./modules;
+        nixosModules.container-telemetry = ./modules/containers.nix;
         nixosModules.default = self.nixosModules.telemetry;
 
         nixosConfigurations.example = inputs.nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          modules = [ self.nixosModules.telemetry ];
+          modules = [
+            self.nixosModules.telemetry
+            self.nixosModules.container-telemetry
+            {
+              fileSystems."/".device = "/dev/hda";
+              boot.loader.grub.device = "/dev/hdb";
+              system.stateVersion = "25.05";
+            }
+          ];
         };
 
       };

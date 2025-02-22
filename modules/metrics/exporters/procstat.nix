@@ -7,14 +7,14 @@
 with lib;
 with types;
 {
-  options.telemetry.exporters.procstat.enable = mkOption {
+  options.telemetry.metrics.exporters.procstat.enable = mkOption {
     type = lib.types.bool;
     default = config.telemetry.metrics.enable;
   };
 
   config = mkMerge [
 
-    (mkIf config.telemetry.exporters.procstat.enable {
+    (mkIf config.telemetry.metrics.exporters.procstat.enable {
 
       services.telegraf.extraConfig.inputs.procstat = {
         pattern = ".";

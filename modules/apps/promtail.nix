@@ -2,18 +2,23 @@
 with lib;
 with types;
 let
-  cfg = config.telemetry.promtail;
+  cfg = config.telemetry.apps.promtail;
 in
 {
-  options.telemetry.promtail = {
+  options.telemetry.apps.promtail = {
     enable = mkOption {
       type = lib.types.bool;
       default = config.telemetry.logs.enable;
+      description = ''
+        enable prometail to scrape logs.
+      '';
     };
     port = mkOption {
       type = int;
       default = 3500;
-      description = "port to provide promtail export";
+      description = ''
+        port to provide promtail receiver port. This is the port promtail will send logs to
+      '';
     };
   };
 
@@ -21,28 +26,33 @@ in
 
     # opentelemetry shippment
     # -----------------------
-    (mkIf config.telemetry.opentelemetry.enable {
+    (mkIf (config.telemetry.apps.promtail.enable && config.telemetry.apps.opentelemetry.enable) {
       services.opentelemetry-collector.settings = {
+
+        service.pipelines.logs.receivers = [ "loki" ];
+
         receivers.loki = {
           protocols.http.endpoint = "127.0.0.1:${toString cfg.port}";
           use_incoming_timestamp = true;
         };
-        service.pipelines.logs.receivers = [ "loki" ];
+
       };
+
+      services.promtail.configuration.clients = [
+        { url = "http://127.0.0.1:${toString cfg.port}/loki/api/v1/push"; }
+      ];
+
     })
 
     # promtail configuration
     # ----------------------
-    (mkIf config.telemetry.promtail.enable {
+    (mkIf (config.telemetry.apps.promtail.enable) {
+
       services.promtail = {
-        enable = true;
+        enable = mkDefault true;
         configuration = {
           server.disable = true;
           positions.filename = "/var/cache/promtail/positions.yaml";
-          clients = [
-            # todo: this should only be set if opentelemetry is also enabled
-            { url = "http://127.0.0.1:${toString cfg.port}/loki/api/v1/push"; }
-          ];
 
           scrape_configs =
 
