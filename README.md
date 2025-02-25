@@ -1,3 +1,5 @@
+> This repository is under redesign. In a few weeks this all options will be rearranged.
+
 A NixOS Flake that provides predefined telemetry configurations for various
 observability tools, leveraging
 [OpenTelemetry](https://opentelemetry.io/docs/collector/) as the core transport
