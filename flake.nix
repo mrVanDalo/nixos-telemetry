@@ -38,7 +38,42 @@
               optionsDoc = pkgs.nixosOptionsDoc {
                 options = self.nixosConfigurations.example.options.telemetry;
                 warningsAreErrors = false;
+                # replace declaration strings
+                transformOptions =
+                  opt:
+                  opt
+                  // {
+                    declarations = map (
+                      decl:
+                      pkgs.lib.strings.replaceStrings [ (toString ./.) ] [
+                        "https://github.com/mrVanDalo/nixos-telemetry/tree/main"
+                      ] (toString decl)
+                    ) opt.declarations;
+                  };
               };
+
+              optionsJSONOutput = "${optionsDoc.optionsJSON}/share/doc/nixos/options.json";
+              option-template = pkgs.writeText "option-template" ''
+                ## {{key}}
+
+                {{value.description}}
+
+                *Type:*
+                ` {{{value.type}}} `
+
+                *Default:*
+                ` {{{value.default.text}}} `
+
+                {{#value.example.text}}
+                *Example:*
+                ` {{{.}}} `
+                {{/value.example.text}}
+
+                *Declared by:*
+                {{#value.declarations}}
+                 - [{{.}}]({{.}})
+                {{/value.declarations}}
+              '';
 
               appCommand = name: command: {
                 "${name}" = {
@@ -49,7 +84,14 @@
 
             in
             { }
-            // (appCommand "markdown" "cat ${optionsDoc.optionsCommonMark}")
+            // (appCommand "markdown" "cat ${optionsDoc.optionsCommonMark}") # renders declarations wrong
+            // (appCommand "markdown-hotfix" ''
+              jq -r 'to_entries | .[] | @json' < ${optionsJSONOutput} | \
+              while read -r entry; do
+                  echo "$entry" | ${pkgs.mustache-go}/bin/mustache ${option-template}
+                  echo -e "\n"
+              done
+            '')
             // (appCommand "json-full" "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json")
             // (appCommand "asciidoc" "cat ${optionsDoc.optionsAsciiDoc}")
             // (appCommand "json" "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json | jq 'with_entries(.value = .value.description)'")

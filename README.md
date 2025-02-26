@@ -1,6 +1,8 @@
 > This repository is under redesign. In a few weeks this all options will be
 > rearranged.
 
+Check out [OPTIONS.md](./OPTIONS.md)
+
 A NixOS Flake that provides predefined telemetry configurations for various
 observability tools, leveraging
 [OpenTelemetry](https://opentelemetry.io/docs/collector/) as the core transport
