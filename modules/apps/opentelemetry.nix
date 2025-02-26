@@ -79,6 +79,7 @@ in
             system.hostname_sources = [ "os" ];
           };
 
+          # todo : align also  instance and instance_name
           metricstransform.transforms = [
             {
               include = ".*";
@@ -87,7 +88,7 @@ in
               operations = [
                 {
                   action = "add_label";
-                  new_label = "machine"; # todo : use the same here as for logs (host_name)
+                  new_label = "host_name";
                   new_value = config.networking.hostName;
                 }
               ];
@@ -126,7 +127,7 @@ in
             sampling_initial = 5;
             sampling_thereafter = 200;
           };
-          service.pipelines.${config.telemetry.opentelemetry.exporter.debug} = {
+          service.pipelines.${config.telemetry.apps.opentelemetry.exporter.debug} = {
             exporters = [ "debug" ];
           };
         };

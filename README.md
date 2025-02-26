@@ -35,3 +35,11 @@ graph TD;
 
     Opentelemetry1 --> Opentelemetry2
 ```
+
+## labels
+
+Here are labels, which we try to always set.
+
+_instance:_ Either the host name or the container name.
+
+_host_name:_ The host name also for containers.

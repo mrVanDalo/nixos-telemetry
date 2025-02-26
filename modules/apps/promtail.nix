@@ -91,7 +91,7 @@ in
                       boot_id = "_BOOT_ID";
                       facility = "SYSLOG_FACILITY";
                       facility_label = "SYSLOG_FACILITY";
-                      instance = "_HOSTNAME";
+                      instance_name = "_HOSTNAME";
                       msg = "MESSAGE";
                       priority = "PRIORITY";
                       priority_label = "PRIORITY";
@@ -124,7 +124,6 @@ in
                     # Map priority to human readable
                     template = {
                       source = "priority_label";
-                      #template = ''{{ if eq .Value "0" }}{{ Replace .Value "0" "emerg" 1 }}{{ else if eq .Value "1" }}{{ Replace .Value "1" "alert" 1 }}{{ else if eq .Value "2" }}{{ Replace .Value "2" "crit" 1 }}{{ else if eq .Value "3" }}{{ Replace .Value "3" "err" 1 }}{{ else if eq .Value "4" }}{{ Replace .Value "4" "warning" 1 }}{{ else if eq .Value "5" }}{{ Replace .Value "5" "notice" 1 }}{{ else if eq .Value "6" }}{{ Replace .Value "6" "info" 1 }}{{ else if eq .Value "7" }}{{ Replace .Value "7" "debug" 1 }}{{ end }}'';
                       template = createTemplateLine [
                         "emergency"
                         "alert"
@@ -178,7 +177,7 @@ in
                       boot_id = "";
                       facility = "";
                       facility_label = "";
-                      instance = "";
+                      instance_name = "";
                       priority = "";
                       priority_label = "";
                       transport = "";

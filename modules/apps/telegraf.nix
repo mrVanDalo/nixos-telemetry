@@ -54,6 +54,9 @@ in
       services.telegraf = {
         enable = mkDefault true;
         extraConfig = {
+          global_tags = {
+            instance_name = config.networking.hostName; # this will end up as `instance` label  in  prometheus
+          };
           # https://github.com/influxdata/telegraf/tree/master/plugins/inputs < all them plugins
           inputs = {
 
