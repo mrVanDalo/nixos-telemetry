@@ -67,8 +67,6 @@ in
             processes = { };
             system = { };
             systemd_units = { };
-            # todo : this is a presonal configuration, and go
-            ping = [ { urls = [ "10.100.0.1" ]; } ]; # actually important to make machine visible over wireguard
 
             # services
             # todo : add all kinds of services here
