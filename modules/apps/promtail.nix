@@ -38,10 +38,6 @@ in
 
       };
 
-      services.promtail.configuration.clients = [
-        { url = "http://127.0.0.1:${toString cfg.port}/loki/api/v1/push"; }
-      ];
-
     })
 
     # promtail configuration
@@ -51,6 +47,9 @@ in
       services.promtail = {
         enable = mkDefault true;
         configuration = {
+          clients = [
+            { url = "http://127.0.0.1:${toString cfg.port}/loki/api/v1/push"; }
+          ];
           server.disable = true;
           positions.filename = "/var/cache/promtail/positions.yaml";
 
