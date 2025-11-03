@@ -67,6 +67,7 @@ in
             processes = { };
             system = { };
             systemd_units = { };
+            temp = { };
 
             # services
             # todo : add all kinds of services here
