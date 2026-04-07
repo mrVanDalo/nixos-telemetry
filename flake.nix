@@ -45,9 +45,12 @@
                   // {
                     declarations = map (
                       decl:
-                      pkgs.lib.strings.replaceStrings [ (toString ./.) ] [
-                        "https://github.com/mrVanDalo/nixos-telemetry/tree/main"
-                      ] (toString decl)
+                      pkgs.lib.strings.replaceStrings
+                        [ (toString ./.) ]
+                        [
+                          "https://github.com/mrVanDalo/nixos-telemetry/tree/main"
+                        ]
+                        (toString decl)
                     ) opt.declarations;
                   };
               };
@@ -100,7 +103,15 @@
                 jq -r 'to_entries | map(select(.value.description == "This option has no description.")) | .[].key'
             '');
 
-        };
+        }
+        // (lib.optionalAttrs (system == "x86_64-linux") {
+          checks.example = self.nixosConfigurations.example.config.system.build.toplevel;
+          checks.log-pipeline = pkgs.testers.runNixOSTest (
+            import ./nix/tests/log-pipeline.nix {
+              inherit self;
+            }
+          );
+        });
 
       flake = {
         # The usual flake attributes can be defined here, including system-
@@ -139,6 +150,29 @@
               fileSystems."/".device = "/dev/hda";
               boot.loader.grub.device = "/dev/hdb";
               system.stateVersion = "25.05";
+
+              telemetry = {
+                enable = true;
+
+                logs.enable = true;
+                metrics.enable = true;
+
+                metrics.exporters.procstat.enable = true;
+                metrics.exporters.zfs.enable = true;
+
+                apps = {
+                  opentelemetry = {
+                    enable = true;
+                    exporter.endpoint = "100.0.0.1:4317";
+                    exporter.debug = "logs";
+                    receiver.endpoint = "0.0.0.0:4317";
+                  };
+                  alloy.enable = true;
+                  telegraf.enable = true;
+                  netdata.enable = true;
+                  prometheus.enable = true;
+                };
+              };
             }
           ];
         };

@@ -59,7 +59,7 @@ in
               _replace = index: replacement: ''{{ Replace .Value "${toString index}" "${replacement}" 1 }}'';
               _elseif = index: ''{{ else if eq .Value "${toString index}" }}'';
               _if = index: ''{{ if eq .Value "${toString index}" }}'';
-              _end = ''{{ end }}'';
+              _end = "{{ end }}";
               elseblock = index: replacement: "${_elseif index}${_replace index replacement}";
               ifblock = index: replacement: "${_if index}${_replace index replacement}";
               createTemplateLine =

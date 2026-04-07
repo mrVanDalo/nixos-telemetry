@@ -4,7 +4,7 @@
     ./netdata.nix
     ./opentelemetry.nix
     ./prometheus.nix
-    ./promtail.nix
+    ./alloy.nix
     ./telegraf.nix
   ];
 }
