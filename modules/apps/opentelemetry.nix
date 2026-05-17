@@ -36,11 +36,6 @@ in
       default = null;
       description = "enable debug exporter.";
     };
-    metrics.endpoint = mkOption {
-      type = str;
-      default = "127.0.0.1:8100";
-      description = "endpoint on where to provide opentelementry collector metrics";
-    };
   };
 
   config = mkMerge [
@@ -184,47 +179,9 @@ in
       && config.telemetry.apps.opentelemetry.enable
     ) { services.opentelemetry-collector.settings.service.pipelines.metrics.receivers = [ "otlp" ]; })
 
-    # scrape opentelemetry collectors metrics
-    # --------------------------------------
-    # todo: this should be collected another way (opentelemetry internal?)
-    # todo : enable me only when metrics.endpoint is set.
-    (mkIf (config.telemetry.metrics.enable && config.telemetry.apps.opentelemetry.enable) {
-      services.opentelemetry-collector.settings = {
-        receivers = {
-          prometheus.config.scrape_configs = [
-            {
-              job_name = "otelcol";
-              scrape_interval = "10s";
-              static_configs = [
-                {
-                  targets = [ cfg.metrics.endpoint ];
-                }
-              ];
-              metric_relabel_configs = [
-                {
-                  source_labels = [ "__name__" ];
-                  regex = ".*grpc_io.*";
-                  action = "drop";
-                }
-              ];
-            }
-          ];
-        };
-
-        service = {
-          pipelines.metrics = {
-            receivers = [ "prometheus" ];
-          };
-
-          # todo : this should be automatically be collected
-          # open telemetries own metrics?
-          telemetry.metrics.address = cfg.metrics.endpoint;
-        };
-
-      };
-    })
-    # disable opentelemetry collectors metrics
-    (mkIf (!config.telemetry.metrics.enable && config.telemetry.apps.opentelemetry.enable) {
+    # disable collector internal metrics
+    # -----------------------------------
+    (mkIf config.telemetry.apps.opentelemetry.enable {
       services.opentelemetry-collector.settings = {
         service.telemetry.metrics.level = "none";
       };
