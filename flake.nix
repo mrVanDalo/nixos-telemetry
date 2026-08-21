@@ -3,6 +3,7 @@
 
   inputs = {
     devshell.url = "github:numtide/devshell";
+    devshell.inputs.nixpkgs.follows = "nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -35,6 +36,8 @@
           apps =
             let
 
+              repoUrl = "https://github.com/mrVanDalo/nixos-telemetry/tree/main";
+
               optionsDoc = pkgs.nixosOptionsDoc {
                 options = self.nixosConfigurations.example.options.telemetry;
                 warningsAreErrors = false;
@@ -44,13 +47,7 @@
                   opt
                   // {
                     declarations = map (
-                      decl:
-                      pkgs.lib.strings.replaceStrings
-                        [ (toString ./.) ]
-                        [
-                          "https://github.com/mrVanDalo/nixos-telemetry/tree/main"
-                        ]
-                        (toString decl)
+                      decl: pkgs.lib.strings.replaceStrings [ (toString ./.) ] [ repoUrl ] (toString decl)
                     ) opt.declarations;
                   };
               };
@@ -87,9 +84,8 @@
 
             in
             { }
-            // (appCommand "markdown" "cat ${optionsDoc.optionsCommonMark}") # renders declarations wrong
             // (appCommand "markdown-hotfix" ''
-              jq -r 'to_entries | .[] | @json' < ${optionsJSONOutput} | \
+              ${pkgs.jq}/bin/jq -r 'to_entries | .[] | @json' < ${optionsJSONOutput} | \
               while read -r entry; do
                   echo "$entry" | ${pkgs.mustache-go}/bin/mustache ${option-template}
                   echo -e "\n"
@@ -97,10 +93,10 @@
             '')
             // (appCommand "json-full" "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json")
             // (appCommand "asciidoc" "cat ${optionsDoc.optionsAsciiDoc}")
-            // (appCommand "json" "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json | jq 'with_entries(.value = .value.description)'")
+            // (appCommand "json" "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json | ${pkgs.jq}/bin/jq 'with_entries(.value = .value.description)'")
             // (appCommand "undocumented" ''
               cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json | \
-                jq -r 'to_entries | map(select(.value.description == "This option has no description.")) | .[].key'
+                ${pkgs.jq}/bin/jq -r 'to_entries | map(select(.value.description == "This option has no description.")) | .[].key'
             '');
 
         }

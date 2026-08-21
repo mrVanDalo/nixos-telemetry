@@ -1,13 +1,12 @@
 {
   lib,
-  pkgs,
   config,
   ...
 }:
 with lib;
 with types;
 let
-  netdataPort = 19999;
+  cfg = config.telemetry.apps.netdata;
 in
 {
   options.telemetry.apps.netdata = {
@@ -16,6 +15,13 @@ in
       default = config.telemetry.metrics.enable;
       description = ''
         enable netdata to collect metrics.
+      '';
+    };
+    port = mkOption {
+      type = int;
+      default = 19999;
+      description = ''
+        Port netdata exposes its metrics on.
       '';
     };
   };
@@ -29,7 +35,6 @@ in
       services.netdata = {
         enable = lib.mkDefault true;
         config = {
-          # todo: configure netdataPort and reference it in the opentelemetry configuration
           global = {
             "memory mode" = "ram";
           };
@@ -50,7 +55,7 @@ in
             scrape_interval = "10s";
             metrics_path = "/api/v1/allmetrics";
             params.format = [ "prometheus" ];
-            static_configs = [ { targets = [ "127.0.0.1:${toString netdataPort}" ]; } ];
+            static_configs = [ { targets = [ "127.0.0.1:${toString cfg.port}" ]; } ];
           }
         ];
       };

@@ -76,6 +76,10 @@ in
             target_label  = "instance_name"
           }
           rule {
+            source_labels = ["__journal__hostname"]
+            target_label  = "host_name"
+          }
+          rule {
             source_labels = ["__journal__transport"]
             target_label  = "transport"
           }

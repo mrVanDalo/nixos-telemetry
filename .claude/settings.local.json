@@ -3,7 +3,6 @@
     "allow": [
       "WebSearch",
       "WebFetch(domain:grafana.com)",
-      "WebFetch(domain:mynixos.com)",
       "WebFetch(domain:opentelemetry.io)",
       "Bash(nix log:*)"
     ]

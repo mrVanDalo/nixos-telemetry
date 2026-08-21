@@ -38,7 +38,7 @@ in
       services.prometheus = {
         checkConfig = mkDefault "syntax-only";
         enable = mkDefault true;
-        extraFlags = mkDefault [ "--storage.tsdb.retention.time=${toString cfg.retentionTime}" ];
+        extraFlags = mkDefault [ "--storage.tsdb.retention.time=${cfg.retentionTime}" ];
       };
     })
 

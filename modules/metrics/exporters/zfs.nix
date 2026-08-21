@@ -1,5 +1,4 @@
 {
-  pkgs,
   config,
   lib,
   ...
@@ -10,38 +9,19 @@ with types;
   options.telemetry.metrics.exporters.zfs.enable = mkOption {
     type = lib.types.bool;
     default = config.telemetry.metrics.enable;
+    description = ''
+      Enable zfs metrics collection via telegraf.
+    '';
   };
 
   config = mkMerge [
 
-    (mkIf config.telemetry.metrics.exporters.zfs.enable {
+    (mkIf (config.telemetry.metrics.exporters.zfs.enable && config.telemetry.apps.telegraf.enable) {
 
-      # todo: prometheus or telegraf?
       services.telegraf.extraConfig.inputs.zfs = {
         poolMetrics = lib.mkDefault true;
         datasetMetrics = lib.mkDefault true;
       };
-
-      # Prometheus
-      # ----------
-      # fixme: this not working, because I get the same labels and values over and over again, which spams the logs.
-      #services.prometheus.exporters.zfs.enable = true;
-
-      # todo :  only when opentelemetry is enabled
-      #services.opentelemetry-collector.settings = {
-      #  receivers.prometheus.config.scrape_configs = [
-      #    {
-      #      job_name = "zfs";
-      #      scrape_interval = "10s";
-      #      static_configs = [
-      #        {
-      #          targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.zfs.port}" ];
-      #        }
-      #      ];
-      #    }
-      #  ];
-      #  service.pipelines.metrics.receivers = [ "prometheus" ];
-      #};
 
     })
   ];

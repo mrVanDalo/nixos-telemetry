@@ -74,7 +74,6 @@ in
             system.hostname_sources = [ "os" ];
           };
 
-          # todo : align also  instance and instance_name
           metricstransform.transforms = [
             {
               include = ".*";
