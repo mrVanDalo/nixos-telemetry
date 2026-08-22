@@ -26,19 +26,22 @@ in
 
     # opentelemetry shipment
     # -----------------------
-    (lib.mkIf (cfg.enable && config.telemetry.apps.opentelemetry.enable) {
-      services.opentelemetry-collector.settings = {
+    (lib.mkIf
+      (cfg.enable && config.telemetry.apps.opentelemetry.enable && config.telemetry.logs.hasSink)
+      {
+        services.opentelemetry-collector.settings = {
 
-        service.pipelines.logs.receivers = [ "loki" ];
+          service.pipelines.logs.receivers = [ "loki" ];
 
-        receivers.loki = {
-          protocols.http.endpoint = "127.0.0.1:${toString cfg.port}";
-          use_incoming_timestamp = true;
+          receivers.loki = {
+            protocols.http.endpoint = "127.0.0.1:${toString cfg.port}";
+            use_incoming_timestamp = true;
+          };
+
         };
 
-      };
-
-    })
+      }
+    )
 
     # alloy configuration
     # --------------------

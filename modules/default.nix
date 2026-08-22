@@ -29,6 +29,34 @@ with types;
         services that are enabled in your NixOS configuration.
       '';
     };
+
+    # internal: whether the metrics/logs pipeline will have both a source and a sink.
+    # pipeline fragments (receivers/exporters/processors) are only created when both exist,
+    # so the OTel collector never sees a pipeline with missing receivers or exporters.
+    metrics.hasSource = mkOption {
+      type = bool;
+      readOnly = true;
+      internal = true;
+      description = "Internal: at least one metrics source (receiver) is configured.";
+    };
+    metrics.hasSink = mkOption {
+      type = bool;
+      readOnly = true;
+      internal = true;
+      description = "Internal: at least one metrics sink (exporter) is configured.";
+    };
+    logs.hasSource = mkOption {
+      type = bool;
+      readOnly = true;
+      internal = true;
+      description = "Internal: at least one logs source (receiver) is configured.";
+    };
+    logs.hasSink = mkOption {
+      type = bool;
+      readOnly = true;
+      internal = true;
+      description = "Internal: at least one logs sink (exporter) is configured.";
+    };
   };
 
   imports = [
@@ -37,5 +65,24 @@ with types;
     ./logs
   ];
 
-  config = mkIf config.telemetry.enable { };
+  config = {
+    telemetry.metrics.hasSource =
+      config.telemetry.apps.telegraf.enable
+      || config.telemetry.apps.netdata.enable
+      || (config.telemetry.apps.opentelemetry.receiver.endpoint != null);
+
+    telemetry.metrics.hasSink =
+      config.telemetry.apps.prometheus.enable
+      || (config.telemetry.apps.opentelemetry.exporter.endpoint != null)
+      || (config.telemetry.apps.opentelemetry.exporter.debug == "metrics");
+
+    telemetry.logs.hasSource =
+      config.telemetry.apps.alloy.enable
+      || (config.telemetry.apps.opentelemetry.receiver.endpoint != null);
+
+    telemetry.logs.hasSink =
+      config.telemetry.apps.loki.enable
+      || (config.telemetry.apps.opentelemetry.exporter.endpoint != null)
+      || (config.telemetry.apps.opentelemetry.exporter.debug == "logs");
+  };
 }

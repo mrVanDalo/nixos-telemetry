@@ -31,19 +31,26 @@ in
 
     # wire telegraf with opentelemetry
     # -------------------------------
-    (mkIf (config.telemetry.apps.telegraf.enable && config.telemetry.apps.opentelemetry.enable) {
+    (mkIf
+      (
+        config.telemetry.apps.telegraf.enable
+        && config.telemetry.apps.opentelemetry.enable
+        && config.telemetry.metrics.hasSink
+      )
+      {
 
-      # opentelemetry wireing
-      services.opentelemetry-collector.settings = {
-        receivers.influxdb.endpoint = "127.0.0.1:${toString cfg.port}";
-        service.pipelines.metrics.receivers = [ "influxdb" ];
-      };
+        # opentelemetry wireing
+        services.opentelemetry-collector.settings = {
+          receivers.influxdb.endpoint = "127.0.0.1:${toString cfg.port}";
+          service.pipelines.metrics.receivers = [ "influxdb" ];
+        };
 
-      services.telegraf.extraConfig.outputs.influxdb_v2.urls = [
-        "http://127.0.0.1:${toString cfg.port}"
-      ];
+        services.telegraf.extraConfig.outputs.influxdb_v2.urls = [
+          "http://127.0.0.1:${toString cfg.port}"
+        ];
 
-    })
+      }
+    )
 
     # configure telegraf
     # -----------------

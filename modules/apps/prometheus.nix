@@ -44,22 +44,29 @@ in
 
     # provide opentelemetry prometheus exporter
     # -----------------------------------------
-    (mkIf (config.telemetry.apps.prometheus.enable && config.telemetry.apps.opentelemetry.enable) {
-      services.opentelemetry-collector.settings = {
-        service.pipelines.metrics.exporters = [ "prometheus" ];
-        exporters.prometheus.endpoint = "127.0.0.1:${toString cfg.port}";
-      };
+    (mkIf
+      (
+        config.telemetry.apps.prometheus.enable
+        && config.telemetry.apps.opentelemetry.enable
+        && config.telemetry.metrics.hasSource
+      )
+      {
+        services.opentelemetry-collector.settings = {
+          service.pipelines.metrics.exporters = [ "prometheus" ];
+          exporters.prometheus.endpoint = "127.0.0.1:${toString cfg.port}";
+        };
 
-      services.prometheus.scrapeConfigs = [
-        {
-          job_name = "opentelemetry";
-          metrics_path = "/metrics";
-          scrape_interval = "10s";
-          static_configs = [ { targets = [ "localhost:${toString cfg.port}" ]; } ];
-        }
-      ];
+        services.prometheus.scrapeConfigs = [
+          {
+            job_name = "opentelemetry";
+            metrics_path = "/metrics";
+            scrape_interval = "10s";
+            static_configs = [ { targets = [ "localhost:${toString cfg.port}" ]; } ];
+          }
+        ];
 
-    })
+      }
+    )
 
   ];
 }

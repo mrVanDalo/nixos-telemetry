@@ -16,6 +16,7 @@
       imports = [
         ./nix/formatter.nix
         ./nix/devshells.nix
+        ./tests/default.nix
       ];
       systems = [
         "x86_64-linux"
@@ -38,8 +39,21 @@
 
               repoUrl = "https://github.com/mrVanDalo/nixos-telemetry/tree/main";
 
+              telemetryOptions =
+                (pkgs.lib.evalModules {
+                  modules = [
+                    self.nixosModules.telemetry
+                    {
+                      _module.check = false;
+                    }
+                  ];
+                  specialArgs = {
+                    inherit pkgs lib;
+                  };
+                }).options.telemetry;
+
               optionsDoc = pkgs.nixosOptionsDoc {
-                options = self.nixosConfigurations.example.options.telemetry;
+                options = telemetryOptions;
                 warningsAreErrors = false;
                 # replace declaration strings
                 transformOptions =
@@ -75,39 +89,37 @@
                 {{/value.declarations}}
               '';
 
-              appCommand = name: command: {
+              appCommand = name: description: command: {
                 "${name}" = {
                   type = "app";
                   program = pkgs.writers.writeBashBin "${name}" command;
+                  meta.description = description;
                 };
               };
 
             in
             { }
-            // (appCommand "markdown-hotfix" ''
+            // (appCommand "markdown-hotfix" "Generate Markdown documentation from the telemetry options" ''
               ${pkgs.jq}/bin/jq -r 'to_entries | .[] | @json' < ${optionsJSONOutput} | \
               while read -r entry; do
                   echo "$entry" | ${pkgs.mustache-go}/bin/mustache ${option-template}
                   echo -e "\n"
               done
             '')
-            // (appCommand "json-full" "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json")
-            // (appCommand "asciidoc" "cat ${optionsDoc.optionsAsciiDoc}")
-            // (appCommand "json" "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json | ${pkgs.jq}/bin/jq 'with_entries(.value = .value.description)'")
-            // (appCommand "undocumented" ''
+            // (appCommand "json-full" "Print the full telemetry options JSON"
+              "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json"
+            )
+            // (appCommand "asciidoc" "Print the telemetry options as AsciiDoc"
+              "cat ${optionsDoc.optionsAsciiDoc}"
+            )
+            // (appCommand "json" "Print telemetry option names mapped to their descriptions"
+              "cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json | ${pkgs.jq}/bin/jq 'with_entries(.value = .value.description)'"
+            )
+            // (appCommand "undocumented" "List telemetry options that have no description" ''
               cat ${optionsDoc.optionsJSON}/share/doc/nixos/options.json | \
                 ${pkgs.jq}/bin/jq -r 'to_entries | map(select(.value.description == "This option has no description.")) | .[].key'
             '');
-
-        }
-        // (lib.optionalAttrs (system == "x86_64-linux") {
-          checks.example = self.nixosConfigurations.example.config.system.build.toplevel;
-          checks.log-pipeline = pkgs.testers.runNixOSTest (
-            import ./nix/tests/log-pipeline.nix {
-              inherit self;
-            }
-          );
-        });
+        };
 
       flake = {
         # The usual flake attributes can be defined here, including system-
@@ -136,42 +148,6 @@
           };
 
         nixosModules.default = self.nixosModules.telemetry;
-
-        nixosConfigurations.example = inputs.nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            self.nixosModules.telemetry
-            self.nixosModules.container-telemetry
-            {
-              fileSystems."/".device = "/dev/hda";
-              boot.loader.grub.device = "/dev/hdb";
-              system.stateVersion = "25.05";
-
-              telemetry = {
-                enable = true;
-
-                logs.enable = true;
-                metrics.enable = true;
-
-                metrics.exporters.procstat.enable = true;
-                metrics.exporters.zfs.enable = true;
-
-                apps = {
-                  opentelemetry = {
-                    enable = true;
-                    exporter.endpoint = "100.0.0.1:4317";
-                    exporter.debug = "logs";
-                    receiver.endpoint = "0.0.0.0:4317";
-                  };
-                  alloy.enable = true;
-                  telegraf.enable = true;
-                  netdata.enable = true;
-                  prometheus.enable = true;
-                };
-              };
-            }
-          ];
-        };
 
       };
     };

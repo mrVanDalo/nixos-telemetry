@@ -1,4 +1,3 @@
-# contains app related configuration
 {
   imports = [
     ./netdata.nix
@@ -6,5 +5,7 @@
     ./prometheus.nix
     ./alloy.nix
     ./telegraf.nix
+    ./loki.nix
+    ./grafana.nix
   ];
 }
