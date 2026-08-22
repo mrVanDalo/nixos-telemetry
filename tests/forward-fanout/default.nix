@@ -1,15 +1,16 @@
 # Goal:
-# verify forwarding across source -> proxy -> sink, and assert host identity is preserved
+# verify OTLP fan-out: source ships to two independent targets simultaneously,
+# and assert host identity is preserved on both.
 { self, ... }:
 
 {
   perSystem =
     { pkgs, ... }:
     {
-      checks.forward-chain = pkgs.testers.runNixOSTest {
-        name = "forward-chain";
+      checks.forward-fanout = pkgs.testers.runNixOSTest {
+        name = "forward-fanout";
 
-        # source: collects logs + metrics, ships to proxy
+        # source: collects logs + metrics, fans out to target-1 AND target-2
         nodes.source =
           { ... }:
           {
@@ -26,22 +27,26 @@
               apps = {
                 opentelemetry = {
                   enable = true;
-                  exporter.endpoints.proxy = "proxy:4317";
+                  exporter.endpoints = {
+                    target1 = "target1:4317";
+                    target2 = "target2:4317";
+                  };
                 };
                 alloy.enable = true;
                 telegraf.enable = true;
                 netdata.enable = false;
                 prometheus.enable = false;
+                loki.enable = false;
               };
             };
           };
 
-        # proxy: pure relay, receives from source, forwards to sink
-        nodes.proxy =
+        # target-1: terminal, receives via OTLP, debug + prometheus to verify receipt
+        nodes.target1 =
           { ... }:
           {
             imports = [ self.nixosModules.telemetry ];
-            networking.hostName = "proxy";
+            networking.hostName = "target1";
             networking.firewall.enable = false;
             system.stateVersion = "25.05";
 
@@ -54,22 +59,22 @@
                 opentelemetry = {
                   enable = true;
                   receiver.endpoint = "0.0.0.0:4317";
-                  exporter.endpoints.sink = "sink:4317";
+                  exporter.debug = "logs";
                 };
+                prometheus.enable = true;
                 alloy.enable = false;
                 telegraf.enable = false;
                 netdata.enable = false;
-                prometheus.enable = false;
               };
             };
           };
 
-        # sink: terminal, runs prometheus + debug exporter, no local source
-        nodes.sink =
+        # target-2: terminal, receives via OTLP, debug + prometheus to verify receipt
+        nodes.target2 =
           { ... }:
           {
             imports = [ self.nixosModules.telemetry ];
-            networking.hostName = "sink";
+            networking.hostName = "target2";
             networking.firewall.enable = false;
             system.stateVersion = "25.05";
 

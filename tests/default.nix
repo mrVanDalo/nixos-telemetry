@@ -5,5 +5,7 @@
     ./loki-grafana
     ./forward-central
     ./forward-chain
+    ./forward-fanout
+    ./forward-local
   ];
 }

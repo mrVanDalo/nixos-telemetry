@@ -5,7 +5,7 @@ promtail which reached end of life.
 
 _Type:_ `boolean`
 
-_Default:_ `true`
+_Default:_ `false`
 
 _Declared by:_
 
@@ -94,7 +94,7 @@ enable netdata to collect metrics.
 
 _Type:_ `boolean`
 
-_Default:_ `true`
+_Default:_ `false`
 
 _Declared by:_
 
@@ -118,7 +118,7 @@ enable opentelemetry collector
 
 _Type:_ `boolean`
 
-_Default:_ `true`
+_Default:_ `false`
 
 _Declared by:_
 
@@ -136,15 +136,20 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/opentelemetry.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/opentelemetry.nix)
 
-## telemetry.apps.opentelemetry.exporter.endpoint
+## telemetry.apps.opentelemetry.exporter.endpoints
 
-endpoint to ship data to the next opentelementry collector
+Named OTLP/gRPC endpoints to ship telemetry to. Each attribute becomes a
+separate `otlp/&lt;name&gt;` exporter so the collector can fan out to one or
+more downstream collectors simultaneously.
 
-_Type:_ `null or string`
+_Type:_ `attribute set of string`
 
-_Default:_ `null`
+_Default:_ `{ }`
 
-_Example:_ `"100.0.0.1:4317"`
+_Example:_ `{
+  backup = "100.0.0.2:4317";
+  primary = "100.0.0.1:4317";
+}`
 
 _Declared by:_
 
@@ -208,7 +213,7 @@ enable telegraf to collect metrics.
 
 _Type:_ `boolean`
 
-_Default:_ `true`
+_Default:_ `false`
 
 _Declared by:_
 
@@ -248,7 +253,7 @@ configuration.
 
 _Type:_ `boolean`
 
-_Default:_ `true`
+_Default:_ `false`
 
 _Declared by:_
 
@@ -262,7 +267,7 @@ configuration.
 
 _Type:_ `boolean`
 
-_Default:_ `true`
+_Default:_ `false`
 
 _Declared by:_
 
@@ -274,7 +279,7 @@ Enable process statistics metrics collection via telegraf.
 
 _Type:_ `boolean`
 
-_Default:_ `true`
+_Default:_ `false`
 
 _Declared by:_
 
@@ -286,7 +291,7 @@ Enable zfs metrics collection via telegraf.
 
 _Type:_ `boolean`
 
-_Default:_ `true`
+_Default:_ `false`
 
 _Declared by:_
 

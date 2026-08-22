@@ -73,7 +73,7 @@ with types;
 
     telemetry.metrics.hasSink =
       config.telemetry.apps.prometheus.enable
-      || (config.telemetry.apps.opentelemetry.exporter.endpoint != null)
+      || (config.telemetry.apps.opentelemetry.exporter.endpoints != { })
       || (config.telemetry.apps.opentelemetry.exporter.debug == "metrics");
 
     telemetry.logs.hasSource =
@@ -82,7 +82,7 @@ with types;
 
     telemetry.logs.hasSink =
       config.telemetry.apps.loki.enable
-      || (config.telemetry.apps.opentelemetry.exporter.endpoint != null)
+      || (config.telemetry.apps.opentelemetry.exporter.endpoints != { })
       || (config.telemetry.apps.opentelemetry.exporter.debug == "logs");
   };
 }
