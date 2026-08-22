@@ -1,12 +1,12 @@
 { config, lib, ... }:
 let
-  cfg = config.telemetry.apps.alloy;
+  cfg = config.telemetry.alloy;
 in
 {
-  options.telemetry.apps.alloy = {
+  options.telemetry.alloy = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = config.telemetry.logs.enable;
+      default = false;
       description = ''
         Enable grafana-alloy to scrape journal logs.
         This is the replacement for promtail which reached end of life.
@@ -26,26 +26,23 @@ in
 
     # opentelemetry shipment
     # -----------------------
-    (lib.mkIf
-      (cfg.enable && config.telemetry.apps.opentelemetry.enable && config.telemetry.logs.hasSink)
-      {
-        services.opentelemetry-collector.settings = {
+    (lib.mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.logs.hasSink) {
+      services.opentelemetry-collector.settings = {
 
-          service.pipelines.logs.receivers = [ "loki" ];
+        service.pipelines.logs.receivers = [ "loki" ];
 
-          receivers.loki = {
-            protocols.http.endpoint = "127.0.0.1:${toString cfg.port}";
-            use_incoming_timestamp = true;
-          };
-
+        receivers.loki = {
+          protocols.http.endpoint = "127.0.0.1:${toString cfg.port}";
+          use_incoming_timestamp = true;
         };
 
-      }
-    )
+      };
+
+    })
 
     # alloy configuration
     # --------------------
-    (lib.mkIf cfg.enable {
+    (lib.mkIf (config.telemetry.enable && cfg.enable) {
 
       services.alloy.enable = lib.mkDefault true;
 

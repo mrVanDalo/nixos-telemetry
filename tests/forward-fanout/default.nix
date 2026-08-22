@@ -21,23 +21,12 @@
 
             telemetry = {
               enable = true;
-              logs.enable = true;
-              metrics.enable = true;
-
-              apps = {
-                opentelemetry = {
-                  enable = true;
-                  exporter.endpoints = {
-                    target1 = "target1:4317";
-                    target2 = "target2:4317";
-                  };
-                };
-                alloy.enable = true;
-                telegraf.enable = true;
-                netdata.enable = false;
-                prometheus.enable = false;
-                loki.enable = false;
+              opentelemetry.exporter.endpoints = {
+                target1 = "target1:4317";
+                target2 = "target2:4317";
               };
+              alloy.enable = true;
+              telegraf.enable = true;
             };
           };
 
@@ -52,20 +41,11 @@
 
             telemetry = {
               enable = true;
-              logs.enable = true;
-              metrics.enable = true;
-
-              apps = {
-                opentelemetry = {
-                  enable = true;
-                  receiver.endpoint = "0.0.0.0:4317";
-                  exporter.debug = "logs";
-                };
-                prometheus.enable = true;
-                alloy.enable = false;
-                telegraf.enable = false;
-                netdata.enable = false;
+              opentelemetry = {
+                receiver.endpoint = "0.0.0.0:4317";
+                exporter.debug = "logs";
               };
+              prometheus.enable = true;
             };
           };
 
@@ -80,20 +60,11 @@
 
             telemetry = {
               enable = true;
-              logs.enable = true;
-              metrics.enable = true;
-
-              apps = {
-                opentelemetry = {
-                  enable = true;
-                  receiver.endpoint = "0.0.0.0:4317";
-                  exporter.debug = "logs";
-                };
-                prometheus.enable = true;
-                alloy.enable = false;
-                telegraf.enable = false;
-                netdata.enable = false;
+              opentelemetry = {
+                receiver.endpoint = "0.0.0.0:4317";
+                exporter.debug = "logs";
               };
+              prometheus.enable = true;
             };
           };
 

@@ -22,20 +22,9 @@
 
             telemetry = {
               enable = true;
-              logs.enable = true;
-              metrics.enable = true;
-
-              apps = {
-                # ship everything to the central sink
-                opentelemetry = {
-                  enable = true;
-                  exporter.endpoints.sink = "sink:4317";
-                };
-                alloy.enable = true; # log source
-                telegraf.enable = true; # metric source
-                netdata.enable = false; # one metric source is enough
-                prometheus.enable = false; # no local sink
-              };
+              opentelemetry.exporter.endpoints.sink = "sink:4317";
+              alloy.enable = true;
+              telegraf.enable = true;
             };
           };
 
@@ -50,25 +39,16 @@
 
             telemetry = {
               enable = true;
-              logs.enable = true;
-              metrics.enable = true;
-
-              apps = {
-                opentelemetry = {
-                  enable = true;
-                  receiver.endpoint = "0.0.0.0:4317";
-                  # `exporter.debug = "logs"` makes logs.hasSink true so the OTLP
-                  # receiver is wired into the logs pipeline.
-                  exporter.debug = "logs";
-                };
-                # prometheus is the metrics sink: it makes metrics.hasSink true so
-                # the OTLP receiver is wired into the metrics pipeline, then scrapes
-                # the collector's prometheus exporter.
-                prometheus.enable = true;
-                alloy.enable = false;
-                telegraf.enable = false;
-                netdata.enable = false;
+              opentelemetry = {
+                receiver.endpoint = "0.0.0.0:4317";
+                # `exporter.debug = "logs"` makes logs.hasSink true so the OTLP
+                # receiver is wired into the logs pipeline.
+                exporter.debug = "logs";
               };
+              # prometheus is the metrics sink: it makes metrics.hasSink true so
+              # the OTLP receiver is wired into the metrics pipeline, then scrapes
+              # the collector's prometheus exporter.
+              prometheus.enable = true;
             };
           };
 

@@ -1,4 +1,4 @@
-## telemetry.apps.alloy.enable
+## telemetry.alloy.enable
 
 Enable grafana-alloy to scrape journal logs. This is the replacement for
 promtail which reached end of life.
@@ -9,9 +9,9 @@ _Default:_ `false`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/alloy.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/alloy.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix)
 
-## telemetry.apps.alloy.port
+## telemetry.alloy.port
 
 Port of the local Loki-compatible receiver. This is the port alloy will send
 logs to.
@@ -22,9 +22,24 @@ _Default:_ `3500`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/alloy.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/alloy.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix)
 
-## telemetry.apps.grafana.enable
+## telemetry.enable
+
+Whether to enable the NixOS telemetry system. This is the main switch that
+orchestrates all telemetry functionality: it starts the OpenTelemetry collector
+when a complete pipeline exists, and apps are individually opt-in
+(`telemetry.&lt;app&gt;.enable`).
+
+_Type:_ `boolean`
+
+_Default:_ `false`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules)
+
+## telemetry.grafana.enable
 
 Enable Grafana and auto-provision datasources for any telemetry backends that
 are enabled (Loki, Prometheus).
@@ -35,9 +50,9 @@ _Default:_ `false`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/grafana.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
 
-## telemetry.apps.grafana.port
+## telemetry.grafana.port
 
 Port the Grafana HTTP server listens on.
 
@@ -47,9 +62,9 @@ _Default:_ `3000`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/grafana.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
 
-## telemetry.apps.grafana.secretKey
+## telemetry.grafana.secretKey
 
 Secret key used by Grafana for encrypting secrets in the database. Override this
 in production with a unique value.
@@ -60,13 +75,12 @@ _Default:_ `"SW2YcwTIb9zpOOhoPsMm"`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/grafana.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
 
-## telemetry.apps.loki.enable
+## telemetry.loki.enable
 
-Enable Loki as a log storage backend. When combined with
-`telemetry.apps.opentelemetry.enable`, logs collected by the OpenTelemetry
-collector are pushed to Loki.
+Enable Loki as a log storage backend. When combined with `telemetry.enable`,
+logs collected by the OpenTelemetry collector are pushed to Loki.
 
 _Type:_ `boolean`
 
@@ -74,9 +88,9 @@ _Default:_ `false`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/loki.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix)
 
-## telemetry.apps.loki.port
+## telemetry.loki.port
 
 Port the Loki HTTP server listens on.
 
@@ -86,9 +100,9 @@ _Default:_ `3100`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/loki.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix)
 
-## telemetry.apps.netdata.enable
+## telemetry.netdata.enable
 
 enable netdata to collect metrics.
 
@@ -98,9 +112,9 @@ _Default:_ `false`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/netdata.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/netdata.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix)
 
-## telemetry.apps.netdata.port
+## telemetry.netdata.port
 
 Port netdata exposes its metrics on.
 
@@ -110,21 +124,9 @@ _Default:_ `19999`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/netdata.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/netdata.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix)
 
-## telemetry.apps.opentelemetry.enable
-
-enable opentelemetry collector
-
-_Type:_ `boolean`
-
-_Default:_ `false`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/opentelemetry.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/opentelemetry.nix)
-
-## telemetry.apps.opentelemetry.exporter.debug
+## telemetry.opentelemetry.exporter.debug
 
 enable debug exporter.
 
@@ -134,9 +136,9 @@ _Default:_ `null`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/opentelemetry.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/opentelemetry.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/opentelemetry.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/opentelemetry.nix)
 
-## telemetry.apps.opentelemetry.exporter.endpoints
+## telemetry.opentelemetry.exporter.endpoints
 
 Named OTLP/gRPC endpoints to ship telemetry to. Each attribute becomes a
 separate `otlp/&lt;name&gt;` exporter so the collector can fan out to one or
@@ -153,9 +155,9 @@ _Example:_ `{
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/opentelemetry.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/opentelemetry.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/opentelemetry.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/opentelemetry.nix)
 
-## telemetry.apps.opentelemetry.receiver.endpoint
+## telemetry.opentelemetry.receiver.endpoint
 
 endpoint to receive the opentelementry collector data from other collectors
 
@@ -167,12 +169,12 @@ _Example:_ `"0.0.0.0:4317"`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/opentelemetry.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/opentelemetry.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/opentelemetry.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/opentelemetry.nix)
 
-## telemetry.apps.prometheus.enable
+## telemetry.prometheus.enable
 
 enable prometheus and configure it to scrape opentelemetry collector metrics (in
-case `telemetry.apps.opentelemetry.enable = true`).
+case `telemetry.enable = true`).
 
 _Type:_ `boolean`
 
@@ -180,9 +182,9 @@ _Default:_ `false`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/prometheus.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix)
 
-## telemetry.apps.prometheus.port
+## telemetry.prometheus.port
 
 opentelemetry collector port to expose metrics for prometheus.
 
@@ -192,9 +194,9 @@ _Default:_ `8090`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/prometheus.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix)
 
-## telemetry.apps.prometheus.retentionTime
+## telemetry.prometheus.retentionTime
 
 retention time of prometheus data. If you want to serialize a really long time,
 use thanos.
@@ -205,9 +207,9 @@ _Default:_ `"30d"`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/prometheus.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix)
 
-## telemetry.apps.telegraf.enable
+## telemetry.telegraf.enable
 
 enable telegraf to collect metrics.
 
@@ -217,9 +219,33 @@ _Default:_ `false`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
 
-## telemetry.apps.telegraf.port
+## telemetry.telegraf.inputs.procstat.enable
+
+Enable process statistics metrics collection via telegraf.
+
+_Type:_ `boolean`
+
+_Default:_ `false`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.inputs.zfs.enable
+
+Enable zfs metrics collection via telegraf.
+
+_Type:_ `boolean`
+
+_Default:_ `false`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.port
 
 influxdb port opened by opentelemetry collector which telemetry will send
 metrics to.
@@ -230,69 +256,4 @@ _Default:_ `8088`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/apps/telegraf.nix)
-
-## telemetry.enable
-
-Whether to enable the NixOS telemetry system. This is the main switch that
-controls all telemetry functionality.
-
-_Type:_ `boolean`
-
-_Default:_ `false`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules)
-
-## telemetry.logs.enable
-
-Controls the collection of system logs. When enabled, nixos-telemetry will
-collect logs from configured services that are enabled in your NixOS
-configuration.
-
-_Type:_ `boolean`
-
-_Default:_ `false`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules)
-
-## telemetry.metrics.enable
-
-Controls the collection of system metrics. When enabled, nixos-telemetry will
-collect metrics from configured services that are enabled in your NixOS
-configuration.
-
-_Type:_ `boolean`
-
-_Default:_ `false`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules)
-
-## telemetry.metrics.exporters.procstat.enable
-
-Enable process statistics metrics collection via telegraf.
-
-_Type:_ `boolean`
-
-_Default:_ `false`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/metrics/exporters/procstat.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/metrics/exporters/procstat.nix)
-
-## telemetry.metrics.exporters.zfs.enable
-
-Enable zfs metrics collection via telegraf.
-
-_Type:_ `boolean`
-
-_Default:_ `false`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/metrics/exporters/zfs.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/metrics/exporters/zfs.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)

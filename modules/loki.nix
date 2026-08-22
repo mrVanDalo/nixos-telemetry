@@ -1,16 +1,16 @@
 { config, lib, ... }:
 let
-  cfg = config.telemetry.apps.loki;
+  cfg = config.telemetry.loki;
 in
 {
-  options.telemetry.apps.loki = {
+  options.telemetry.loki = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = ''
         Enable Loki as a log storage backend.
-        When combined with `telemetry.apps.opentelemetry.enable`, logs
-        collected by the OpenTelemetry collector are pushed to Loki.
+        When combined with `telemetry.enable`, logs collected by the
+        OpenTelemetry collector are pushed to Loki.
       '';
     };
 
@@ -27,7 +27,7 @@ in
 
     # enable loki service
     # -------------------
-    (lib.mkIf cfg.enable {
+    (lib.mkIf (config.telemetry.enable && cfg.enable) {
       services.loki = {
         enable = lib.mkDefault true;
         configuration = {
@@ -97,20 +97,18 @@ in
 
     # wire opentelemetry collector → loki (via OTLP HTTP, loki exporter was removed in otel 0.155+)
     # --------------------------------------------------------------
-    (lib.mkIf
-      (cfg.enable && config.telemetry.apps.opentelemetry.enable && config.telemetry.logs.hasSource)
-      {
-        services.opentelemetry-collector.settings = {
-          exporters."otlphttp/loki" = {
-            endpoint = "http://127.0.0.1:${toString cfg.port}/otlp";
-          };
-          service.pipelines.logs.exporters = [ "otlphttp/loki" ];
+    (lib.mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.logs.hasSource) {
+      services.opentelemetry-collector.settings = {
+        exporters."otlphttp/loki" = {
+          endpoint = "http://127.0.0.1:${toString cfg.port}/otlp";
         };
-        # start the collector after loki so its first export doesn't hit
-        # "connection refused" while loki is still coming up
-        systemd.services.opentelemetry-collector.after = [ "loki.service" ];
-      }
-    )
+        service.pipelines.logs.exporters = [ "otlphttp/loki" ];
+      };
+
+      # start the collector after loki so its first export doesn't hit
+      # "connection refused" while loki is still coming up
+      systemd.services.opentelemetry-collector.after = [ "loki.service" ];
+    })
 
   ];
 }

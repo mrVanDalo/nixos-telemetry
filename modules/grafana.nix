@@ -1,9 +1,9 @@
 { config, lib, ... }:
 let
-  cfg = config.telemetry.apps.grafana;
+  cfg = config.telemetry.grafana;
 in
 {
-  options.telemetry.apps.grafana = {
+  options.telemetry.grafana = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -33,12 +33,14 @@ in
 
     # enable grafana service
     # ----------------------
-    (lib.mkIf cfg.enable {
+    (lib.mkIf (config.telemetry.enable && cfg.enable) {
       services.grafana = {
         enable = lib.mkDefault true;
         settings = {
           server.http_listen_port = cfg.port;
           security.secret_key = cfg.secretKey;
+          # follow the browser/OS preference (prefers-color-scheme)
+          users.default_theme = "system";
           "auth.anonymous" = {
             enabled = lib.mkDefault true;
             org_role = lib.mkDefault "Admin";
@@ -50,7 +52,7 @@ in
 
     # provision prometheus datasource
     # ------------------------------
-    (lib.mkIf (cfg.enable && config.telemetry.apps.prometheus.enable) {
+    (lib.mkIf (config.telemetry.enable && cfg.enable && config.telemetry.prometheus.enable) {
       services.grafana.provision.datasources.settings.datasources = [
         {
           name = "Prometheus";
@@ -67,13 +69,13 @@ in
 
     # provision loki datasource
     # -------------------------
-    (lib.mkIf (cfg.enable && config.telemetry.apps.loki.enable) {
+    (lib.mkIf (config.telemetry.enable && cfg.enable && config.telemetry.loki.enable) {
       services.grafana.provision.datasources.settings.datasources = [
         {
           name = "Loki";
           type = "loki";
           access = "proxy";
-          url = "http://127.0.0.1:${toString config.telemetry.apps.loki.port}";
+          url = "http://127.0.0.1:${toString config.telemetry.loki.port}";
           isDefault = false;
           jsonData = {
             maxLines = 1000;

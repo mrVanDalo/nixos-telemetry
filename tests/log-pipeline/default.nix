@@ -18,14 +18,8 @@
 
           telemetry = {
             enable = true;
-            logs.enable = true;
-            metrics.enable = false;
-
-            apps.opentelemetry = {
-              enable = true;
-              exporter.debug = "logs";
-            };
-            apps.alloy.enable = true;
+            opentelemetry.exporter.debug = "logs";
+            alloy.enable = true;
           };
         };
 

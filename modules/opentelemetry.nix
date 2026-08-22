@@ -7,15 +7,10 @@
 with lib;
 with types;
 let
-  cfg = config.telemetry.apps.opentelemetry;
+  cfg = config.telemetry.opentelemetry;
 in
 {
-  options.telemetry.apps.opentelemetry = {
-    enable = mkOption {
-      type = bool;
-      default = config.telemetry.enable;
-      description = "enable opentelemetry collector";
-    };
+  options.telemetry.opentelemetry = {
     receiver.endpoint = mkOption {
       type = nullOr str;
       default = null;
@@ -50,7 +45,7 @@ in
 
     # enable opentelemetry collector
     # ------------------------------
-    (mkIf config.telemetry.apps.opentelemetry.enable {
+    (mkIf (config.telemetry.enable && config.telemetry.pipelines.anyComplete) {
       services.opentelemetry-collector = {
         enable = mkDefault true;
         package = mkDefault pkgs.opentelemetry-collector-contrib;
@@ -67,7 +62,7 @@ in
 
     # add default tags processors
     # ---------------------------
-    (mkIf (config.telemetry.apps.opentelemetry.enable) {
+    (mkIf (config.telemetry.enable && config.telemetry.pipelines.anyComplete) {
 
       services.opentelemetry-collector.settings = {
 
@@ -132,10 +127,9 @@ in
     # wire metrics processors (only when both a source and sink exist, otherwise no pipeline)
     (mkIf
       (
-        config.telemetry.metrics.enable
-        && config.telemetry.apps.opentelemetry.enable
-        && config.telemetry.metrics.hasSource
-        && config.telemetry.metrics.hasSink
+        config.telemetry.enable
+        && config.telemetry.pipelines.metrics.hasSource
+        && config.telemetry.pipelines.metrics.hasSink
       )
       {
         services.opentelemetry-collector.settings = {
@@ -149,10 +143,9 @@ in
     # wire logs processors (only when both a source and sink exist, otherwise no pipeline)
     (mkIf
       (
-        config.telemetry.logs.enable
-        && config.telemetry.apps.opentelemetry.enable
-        && config.telemetry.logs.hasSource
-        && config.telemetry.logs.hasSink
+        config.telemetry.enable
+        && config.telemetry.pipelines.logs.hasSource
+        && config.telemetry.pipelines.logs.hasSink
       )
       {
         services.opentelemetry-collector.settings = {
@@ -170,8 +163,8 @@ in
     (mkIf
       (
         cfg.exporter.debug != null
-        && config.telemetry.apps.opentelemetry.enable
-        && config.telemetry.${cfg.exporter.debug}.hasSource
+        && config.telemetry.enable
+        && config.telemetry.pipelines.${cfg.exporter.debug}.hasSource
       )
       {
         services.opentelemetry-collector.settings = {
@@ -189,7 +182,7 @@ in
 
     # ship to downstream instances
     # ---------------------------
-    (mkIf (cfg.exporter.endpoints != { } && config.telemetry.apps.opentelemetry.enable) {
+    (mkIf (cfg.exporter.endpoints != { } && config.telemetry.enable) {
       services.opentelemetry-collector.settings.exporters = mapAttrs' (name: endpoint: {
         name = "otlp/${name}";
         value = {
@@ -201,9 +194,8 @@ in
     (mkIf
       (
         cfg.exporter.endpoints != { }
-        && config.telemetry.logs.enable
-        && config.telemetry.apps.opentelemetry.enable
-        && config.telemetry.logs.hasSource
+        && config.telemetry.enable
+        && config.telemetry.pipelines.logs.hasSource
       )
       {
         services.opentelemetry-collector.settings.service.pipelines.logs.exporters = map (
@@ -214,9 +206,8 @@ in
     (mkIf
       (
         cfg.exporter.endpoints != { }
-        && config.telemetry.metrics.enable
-        && config.telemetry.apps.opentelemetry.enable
-        && config.telemetry.metrics.hasSource
+        && config.telemetry.enable
+        && config.telemetry.pipelines.metrics.hasSource
       )
       {
         services.opentelemetry-collector.settings.service.pipelines.metrics.exporters = map (
@@ -227,32 +218,22 @@ in
 
     # receive from other instances
     # ----------------------------
-    (mkIf
-      (
-        config.telemetry.apps.opentelemetry.receiver.endpoint != null
-        && config.telemetry.apps.opentelemetry.enable
-      )
-      {
-        services.opentelemetry-collector.settings.receivers.otlp.protocols.grpc.endpoint =
-          cfg.receiver.endpoint;
-      }
-    )
+    (mkIf (cfg.receiver.endpoint != null && config.telemetry.enable) {
+      services.opentelemetry-collector.settings.receivers.otlp.protocols.grpc.endpoint =
+        cfg.receiver.endpoint;
+    })
     (mkIf (
-      config.telemetry.apps.opentelemetry.receiver.endpoint != null
-      && config.telemetry.logs.enable
-      && config.telemetry.apps.opentelemetry.enable
-      && config.telemetry.logs.hasSink
+      cfg.receiver.endpoint != null && config.telemetry.enable && config.telemetry.pipelines.logs.hasSink
     ) { services.opentelemetry-collector.settings.service.pipelines.logs.receivers = [ "otlp" ]; })
     (mkIf (
-      config.telemetry.apps.opentelemetry.receiver.endpoint != null
-      && config.telemetry.metrics.enable
-      && config.telemetry.apps.opentelemetry.enable
-      && config.telemetry.metrics.hasSink
+      cfg.receiver.endpoint != null
+      && config.telemetry.enable
+      && config.telemetry.pipelines.metrics.hasSink
     ) { services.opentelemetry-collector.settings.service.pipelines.metrics.receivers = [ "otlp" ]; })
 
     # disable collector internal metrics
     # -----------------------------------
-    (mkIf config.telemetry.apps.opentelemetry.enable {
+    (mkIf (config.telemetry.enable && config.telemetry.pipelines.anyComplete) {
       services.opentelemetry-collector.settings = {
         service.telemetry.metrics.level = "none";
       };

@@ -8,81 +8,78 @@ with types;
       default = false;
       description = ''
         Whether to enable the NixOS telemetry system.
-        This is the main switch that controls all telemetry functionality.
-      '';
-    };
-    metrics.enable = mkOption {
-      type = bool;
-      default = config.telemetry.enable;
-      description = ''
-        Controls the collection of system metrics.
-        When enabled, nixos-telemetry will collect metrics from configured
-        services that are enabled in your NixOS configuration.
-      '';
-    };
-    logs.enable = mkOption {
-      type = bool;
-      default = config.telemetry.enable;
-      description = ''
-        Controls the collection of system logs.
-        When enabled, nixos-telemetry will collect logs from configured
-        services that are enabled in your NixOS configuration.
+        This is the main switch that orchestrates all telemetry functionality:
+        it starts the OpenTelemetry collector when a complete pipeline exists,
+        and apps are individually opt-in (`telemetry.<app>.enable`).
       '';
     };
 
     # internal: whether the metrics/logs pipeline will have both a source and a sink.
     # pipeline fragments (receivers/exporters/processors) are only created when both exist,
     # so the OTel collector never sees a pipeline with missing receivers or exporters.
-    metrics.hasSource = mkOption {
+    pipelines.metrics.hasSource = mkOption {
       type = bool;
       readOnly = true;
       internal = true;
       description = "Internal: at least one metrics source (receiver) is configured.";
     };
-    metrics.hasSink = mkOption {
+    pipelines.metrics.hasSink = mkOption {
       type = bool;
       readOnly = true;
       internal = true;
       description = "Internal: at least one metrics sink (exporter) is configured.";
     };
-    logs.hasSource = mkOption {
+    pipelines.logs.hasSource = mkOption {
       type = bool;
       readOnly = true;
       internal = true;
       description = "Internal: at least one logs source (receiver) is configured.";
     };
-    logs.hasSink = mkOption {
+    pipelines.logs.hasSink = mkOption {
       type = bool;
       readOnly = true;
       internal = true;
       description = "Internal: at least one logs sink (exporter) is configured.";
     };
+    pipelines.anyComplete = mkOption {
+      type = bool;
+      readOnly = true;
+      internal = true;
+      description = "Internal: at least one complete pipeline (a metrics or logs source+sink pair) exists, so the collector can start.";
+    };
   };
 
   imports = [
-    ./metrics
-    ./apps
-    ./logs
+    ./opentelemetry.nix
+    ./alloy.nix
+    ./loki.nix
+    ./telegraf.nix
+    ./prometheus.nix
+    ./netdata.nix
+    ./grafana.nix
   ];
 
   config = {
-    telemetry.metrics.hasSource =
-      config.telemetry.apps.telegraf.enable
-      || config.telemetry.apps.netdata.enable
-      || (config.telemetry.apps.opentelemetry.receiver.endpoint != null);
+    telemetry.pipelines.metrics.hasSource =
+      config.telemetry.telegraf.enable
+      || config.telemetry.netdata.enable
+      || (config.telemetry.opentelemetry.receiver.endpoint != null);
 
-    telemetry.metrics.hasSink =
-      config.telemetry.apps.prometheus.enable
-      || (config.telemetry.apps.opentelemetry.exporter.endpoints != { })
-      || (config.telemetry.apps.opentelemetry.exporter.debug == "metrics");
+    telemetry.pipelines.metrics.hasSink =
+      config.telemetry.prometheus.enable
+      || (config.telemetry.opentelemetry.exporter.endpoints != { })
+      || (config.telemetry.opentelemetry.exporter.debug == "metrics");
 
-    telemetry.logs.hasSource =
-      config.telemetry.apps.alloy.enable
-      || (config.telemetry.apps.opentelemetry.receiver.endpoint != null);
+    telemetry.pipelines.logs.hasSource =
+      config.telemetry.alloy.enable || (config.telemetry.opentelemetry.receiver.endpoint != null);
 
-    telemetry.logs.hasSink =
-      config.telemetry.apps.loki.enable
-      || (config.telemetry.apps.opentelemetry.exporter.endpoints != { })
-      || (config.telemetry.apps.opentelemetry.exporter.debug == "logs");
+    telemetry.pipelines.logs.hasSink =
+      config.telemetry.loki.enable
+      || (config.telemetry.opentelemetry.exporter.endpoints != { })
+      || (config.telemetry.opentelemetry.exporter.debug == "logs");
+
+    telemetry.pipelines.anyComplete =
+      (config.telemetry.pipelines.metrics.hasSource && config.telemetry.pipelines.metrics.hasSink)
+      || (config.telemetry.pipelines.logs.hasSource && config.telemetry.pipelines.logs.hasSink);
   };
 }

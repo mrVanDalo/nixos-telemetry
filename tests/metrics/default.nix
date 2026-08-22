@@ -20,18 +20,11 @@
 
             telemetry = {
               enable = true;
-              logs.enable = false;
-              metrics.enable = true;
-
-              metrics.exporters.procstat.enable = true;
-              metrics.exporters.zfs.enable = true;
-
-              apps = {
-                opentelemetry.enable = true;
-                telegraf.enable = true;
-                netdata.enable = true;
-                prometheus.enable = true;
-              };
+              telegraf.enable = true;
+              netdata.enable = true;
+              prometheus.enable = true;
+              telegraf.inputs.procstat.enable = true;
+              telegraf.inputs.zfs.enable = true;
             };
           };
 

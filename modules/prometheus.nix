@@ -2,16 +2,16 @@
 with lib;
 with types;
 let
-  cfg = config.telemetry.apps.prometheus;
+  cfg = config.telemetry.prometheus;
 in
 {
-  options.telemetry.apps.prometheus = {
+  options.telemetry.prometheus = {
     enable = mkOption {
       type = bool;
       default = false;
       description = ''
         enable prometheus and configure it to scrape opentelemetry collector metrics
-        (in case `telemetry.apps.opentelemetry.enable = true`).
+        (in case `telemetry.enable = true`).
       '';
     };
     port = mkOption {
@@ -34,7 +34,7 @@ in
 
     # configure prometheus
     # --------------------
-    (mkIf config.telemetry.apps.prometheus.enable {
+    (mkIf (config.telemetry.enable && cfg.enable) {
       services.prometheus = {
         checkConfig = mkDefault "syntax-only";
         enable = mkDefault true;
@@ -44,29 +44,22 @@ in
 
     # provide opentelemetry prometheus exporter
     # -----------------------------------------
-    (mkIf
-      (
-        config.telemetry.apps.prometheus.enable
-        && config.telemetry.apps.opentelemetry.enable
-        && config.telemetry.metrics.hasSource
-      )
-      {
-        services.opentelemetry-collector.settings = {
-          service.pipelines.metrics.exporters = [ "prometheus" ];
-          exporters.prometheus.endpoint = "127.0.0.1:${toString cfg.port}";
-        };
+    (mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.metrics.hasSource) {
+      services.opentelemetry-collector.settings = {
+        service.pipelines.metrics.exporters = [ "prometheus" ];
+        exporters.prometheus.endpoint = "127.0.0.1:${toString cfg.port}";
+      };
 
-        services.prometheus.scrapeConfigs = [
-          {
-            job_name = "opentelemetry";
-            metrics_path = "/metrics";
-            scrape_interval = "10s";
-            static_configs = [ { targets = [ "localhost:${toString cfg.port}" ]; } ];
-          }
-        ];
+      services.prometheus.scrapeConfigs = [
+        {
+          job_name = "opentelemetry";
+          metrics_path = "/metrics";
+          scrape_interval = "10s";
+          static_configs = [ { targets = [ "localhost:${toString cfg.port}" ]; } ];
+        }
+      ];
 
-      }
-    )
+    })
 
   ];
 }

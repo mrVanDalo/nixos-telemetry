@@ -7,5 +7,6 @@
     ./forward-chain
     ./forward-fanout
     ./forward-local
+    ./collector-guard
   ];
 }

@@ -20,19 +20,9 @@
 
             telemetry = {
               enable = true;
-              logs.enable = true;
-              metrics.enable = true;
-
-              apps = {
-                opentelemetry = {
-                  enable = true;
-                  exporter.endpoints.proxy = "proxy:4317";
-                };
-                alloy.enable = true;
-                telegraf.enable = true;
-                netdata.enable = false;
-                prometheus.enable = false;
-              };
+              opentelemetry.exporter.endpoints.proxy = "proxy:4317";
+              alloy.enable = true;
+              telegraf.enable = true;
             };
           };
 
@@ -47,19 +37,9 @@
 
             telemetry = {
               enable = true;
-              logs.enable = true;
-              metrics.enable = true;
-
-              apps = {
-                opentelemetry = {
-                  enable = true;
-                  receiver.endpoint = "0.0.0.0:4317";
-                  exporter.endpoints.sink = "sink:4317";
-                };
-                alloy.enable = false;
-                telegraf.enable = false;
-                netdata.enable = false;
-                prometheus.enable = false;
+              opentelemetry = {
+                receiver.endpoint = "0.0.0.0:4317";
+                exporter.endpoints.sink = "sink:4317";
               };
             };
           };
@@ -75,20 +55,11 @@
 
             telemetry = {
               enable = true;
-              logs.enable = true;
-              metrics.enable = true;
-
-              apps = {
-                opentelemetry = {
-                  enable = true;
-                  receiver.endpoint = "0.0.0.0:4317";
-                  exporter.debug = "logs";
-                };
-                prometheus.enable = true;
-                alloy.enable = false;
-                telegraf.enable = false;
-                netdata.enable = false;
+              opentelemetry = {
+                receiver.endpoint = "0.0.0.0:4317";
+                exporter.debug = "logs";
               };
+              prometheus.enable = true;
             };
           };
 

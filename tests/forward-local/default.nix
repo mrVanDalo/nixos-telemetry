@@ -25,21 +25,12 @@
 
             telemetry = {
               enable = true;
-              logs.enable = true;
-              metrics.enable = true;
-
-              apps = {
-                opentelemetry = {
-                  enable = true;
-                  exporter.endpoints.target = "target:4317";
-                };
-                alloy.enable = true;
-                telegraf.enable = true;
-                netdata.enable = false;
-                prometheus.enable = true;
-                loki.enable = true;
-                grafana.enable = true;
-              };
+              opentelemetry.exporter.endpoints.target = "target:4317";
+              alloy.enable = true;
+              telegraf.enable = true;
+              prometheus.enable = true;
+              loki.enable = true;
+              grafana.enable = true;
             };
           };
 
@@ -54,20 +45,11 @@
 
             telemetry = {
               enable = true;
-              logs.enable = true;
-              metrics.enable = true;
-
-              apps = {
-                opentelemetry = {
-                  enable = true;
-                  receiver.endpoint = "0.0.0.0:4317";
-                  exporter.debug = "logs";
-                };
-                prometheus.enable = true;
-                alloy.enable = false;
-                telegraf.enable = false;
-                netdata.enable = false;
+              opentelemetry = {
+                receiver.endpoint = "0.0.0.0:4317";
+                exporter.debug = "logs";
               };
+              prometheus.enable = true;
             };
           };
 

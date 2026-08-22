@@ -7,7 +7,7 @@ machine.succeed("systemctl is-active opentelemetry-collector.service")
 machine.sleep(5)
 machine.succeed("systemctl is-active opentelemetry-collector.service")
 
-# ── alloy should be running (default: logs.enable = true) ─────────────
+# ── alloy should be running (enabled explicitly for log collection) ───
 machine.wait_for_unit("alloy.service")
 machine.succeed("systemctl is-active alloy.service")
 
@@ -26,6 +26,17 @@ machine.wait_for_open_port(3000)
 
 # grafana should respond with a login page
 machine.succeed("curl -sf http://127.0.0.1:3000/api/health | grep -q 'ok'")
+# grafana default_theme should follow the browser/OS preference, not be
+# hard-coded to light or dark (system = prefers-color-scheme aware).
+# The NixOS module generates the config as a store-path passed via -config
+# on ExecStart, so extract it from the systemd unit rather than /etc.
+exec_start = machine.succeed("systemctl show -p ExecStart --value grafana.service")
+config_path = exec_start.split(" -config ")[1].strip()
+grafana_config = machine.succeed(f"cat {config_path}")
+assert "default_theme=system" in grafana_config, (
+    "Grafana default_theme should be 'system' to follow the browser preference"
+)
+print("Grafana default_theme verified: system (follows browser/OS preference)")
 
 # ── grafana should have provisioned datasources ───────────────────────
 # loki datasource should be present (prometheus should NOT, it's not enabled)

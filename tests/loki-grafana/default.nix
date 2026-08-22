@@ -18,9 +18,9 @@
 
           telemetry = {
             enable = true;
-            apps.netdata.enable = false;
-            apps.loki.enable = true;
-            apps.grafana.enable = true;
+            alloy.enable = true;
+            loki.enable = true;
+            grafana.enable = true;
           };
         };
 

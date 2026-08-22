@@ -132,19 +132,9 @@
             imports = [ self.nixosModules.telemetry ];
             config = {
               telemetry.enable = lib.mkDefault true; # import this module should be convenient
-              telemetry.metrics.enable = lib.mkDefault false; # metrics of nixos-containers don't make much sense
-              telemetry.logs.enable = lib.mkDefault true; # logs of nixos-containers are  interesting
+              telemetry.alloy.enable = lib.mkDefault true; # collect container journal logs
               services.journald.extraConfig = "SystemMaxUse=1G"; # no need for storing a lot of logs.
             };
-          };
-        nixosModules.container-telemetry-non-private-network =
-          { lib, ... }:
-          {
-            imports = [ self.nixosModules.container-telemetry ];
-            config = {
-              telemetry.apps.opentelemetry.enable = lib.mkDefault false; # we don't need a opentelemetry collector if one is running on the host AND we share the network
-            };
-
           };
 
         nixosModules.default = self.nixosModules.telemetry;
