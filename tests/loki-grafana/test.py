@@ -31,7 +31,7 @@ machine.succeed("curl -sf http://127.0.0.1:3000/api/health | grep -q 'ok'")
 # The NixOS module generates the config as a store-path passed via -config
 # on ExecStart, so extract it from the systemd unit rather than /etc.
 exec_start = machine.succeed("systemctl show -p ExecStart --value grafana.service")
-config_path = exec_start.split(" -config ")[1].strip()
+config_path = exec_start.split(" -config ")[1].split(";")[0].strip()
 grafana_config = machine.succeed(f"cat {config_path}")
 assert "default_theme=system" in grafana_config, (
     "Grafana default_theme should be 'system' to follow the browser preference"
