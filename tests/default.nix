@@ -7,6 +7,7 @@
     ./forward-chain
     ./forward-fanout
     ./forward-local
+    ./grafana-secrets
     ./collector-guard
   ];
 }

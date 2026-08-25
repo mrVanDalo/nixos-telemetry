@@ -70,10 +70,10 @@ print("Local prometheus verified: collector -> prometheus (host_name=source)")
 
 # ── grafana has both datasources provisioned ──────────────────────────
 source.wait_for_open_port(3000)
-datasources = source.succeed("curl -sf http://127.0.0.1:3000/api/datasources")
-assert '"Loki"' in datasources, "Loki datasource not provisioned in Grafana"
+datasources = source.succeed("curl -sf -u admin:admin http://127.0.0.1:3000/api/datasources")
+assert '"OTLP Loki"' in datasources, "OTLP Loki datasource not provisioned in Grafana"
 assert '"Prometheus"' in datasources, "Prometheus datasource not provisioned in Grafana"
-print("Grafana datasources verified: Loki + Prometheus present")
+print("Grafana datasources verified: OTLP Loki + Prometheus present")
 
 # ── collector isn't dropping data ─────────────────────────────────────
 journal = source.succeed("journalctl -u opentelemetry-collector --no-pager -n 80")
