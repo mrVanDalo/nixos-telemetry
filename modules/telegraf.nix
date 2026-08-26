@@ -82,6 +82,7 @@ in
             system = { };
             systemd_units = { };
             temp = { };
+            mem = { };
 
             # services
             # todo : add all kinds of services here
