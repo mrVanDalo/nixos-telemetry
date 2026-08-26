@@ -39,6 +39,39 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules)
 
+## telemetry.grafana.adminAccess
+
+How the initial admin account access is configured:
+
+- `anonymous`: anonymous access is enabled with the Viewer role, so dashboards
+  can be viewed without logging in.
+- `autogenerate`: a random admin password is generated on first start and stored
+  in a file referenced via `$__file{}`. No anonymous access.
+- `firstLoginChange`: the default admin credentials are used and Grafana forces
+  a password change on first login. No anonymous access.
+
+_Type:_ `one of "anonymous", "autogenerate", "firstLoginChange"`
+
+_Default:_ `"firstLoginChange"`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
+
+## telemetry.grafana.autogenerateSecretKey
+
+Automatically generate a persistent Grafana secret key on first start and point
+`security.secret_key` at it via `$__file{}`. Disable to manage the secret key
+yourself.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
+
 ## telemetry.grafana.enable
 
 Enable Grafana and auto-provision datasources for any telemetry backends that
@@ -59,19 +92,6 @@ Port the Grafana HTTP server listens on.
 _Type:_ `signed integer`
 
 _Default:_ `3000`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
-
-## telemetry.grafana.secretKey
-
-Secret key used by Grafana for encrypting secrets in the database. Override this
-in production with a unique value.
-
-_Type:_ `string`
-
-_Default:_ `"SW2YcwTIb9zpOOhoPsMm"`
 
 _Declared by:_
 
