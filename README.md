@@ -138,6 +138,70 @@ graph LR
 }
 ```
 
+## Usage
+
+### Default import
+
+Add this flake as an input to your own NixOS flake, then import the default
+module into the NixOS configuration where you want telemetry:
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixos-telemetry.url = "github:mrVanDalo/nixos-telemetry";
+  };
+
+  outputs =
+    { self, nixpkgs, nixos-telemetry, ... }:
+    {
+      nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          nixos-telemetry.nixosModules.default
+          {
+            telemetry.enable = true;
+            telemetry.telegraf.enable = true;
+            telemetry.opentelemetry.exporter.endpoints.remote = "100.64.0.1:4317";
+          }
+        ];
+      };
+    };
+}
+```
+
+`nixos-telemetry.nixosModules.default` is the only module you need to import: it
+is the super-module that pulls in every app (`opentelemetry`, `telegraf`,
+`alloy`, `loki`, `prometheus`, `netdata`, `grafana`). A `nixosModules.telemetry`
+alias points at the same module.
+
+### Low-footprint import
+
+If you don't want to lock this flake's own inputs (flake-parts, devshell,
+treefmt-nix) into your `flake.lock`, declare the input as non-flake and import
+the modules directory directly — the modules are plain NixOS modules with no
+extra tooling dependencies:
+
+```nix
+nixos-telemetry = {
+  url = "github:mrVanDalo/nixos-telemetry";
+  flake = false;
+};
+```
+
+```nix
+...
+modules = [
+  "${nixos-telemetry}/modules"
+  {
+    telemetry.enable = true;
+    telemetry.telegraf.enable = true;
+    telemetry.opentelemetry.exporter.endpoints.remote = "100.64.0.1:4317";
+  }
+];
+...
+```
+
 ## labels
 
 Here are labels, which we try to always set.
