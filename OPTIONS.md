@@ -85,7 +85,19 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
 
-## telemetry.grafana.port
+## telemetry.grafana.http_addr
+
+Address the Grafana HTTP server listens on.
+
+_Type:_ `string`
+
+_Default:_ `"127.0.0.1"`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
+
+## telemetry.grafana.http_port
 
 Port the Grafana HTTP server listens on.
 

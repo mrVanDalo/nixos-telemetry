@@ -17,11 +17,18 @@ in
         telemetry backends that are enabled (Loki, Prometheus).
       '';
     };
-    port = lib.mkOption {
+    http_port = lib.mkOption {
       type = lib.types.int;
       default = 3000;
       description = ''
         Port the Grafana HTTP server listens on.
+      '';
+    };
+    http_addr = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = ''
+        Address the Grafana HTTP server listens on.
       '';
     };
     autogenerateSecretKey = lib.mkOption {
@@ -63,7 +70,10 @@ in
       services.grafana = {
         enable = lib.mkDefault true;
         settings = {
-          server.http_listen_port = cfg.port;
+          server = {
+            http_listen_port = cfg.http_port;
+            http_addr = cfg.http_addr;
+          };
           users.default_theme = "system";
           security = {
             admin_user = lib.mkDefault "admin";
