@@ -5,27 +5,30 @@ let
   cfg = config.telemetry.prometheus;
 in
 {
-  options.telemetry.prometheus = {
-    enable = mkOption {
-      type = bool;
-      default = false;
-      description = ''
-        enable prometheus and configure it to scrape opentelemetry collector metrics
-        (in case `telemetry.enable = true`).
-      '';
+  options = {
+    telemetry.prometheus = {
+      enable = mkOption {
+        type = bool;
+        default = false;
+        description = ''
+          enable prometheus and configure it to scrape opentelemetry collector metrics
+          (in case `telemetry.enable = true`).
+        '';
+      };
+      retentionTime = mkOption {
+        type = str;
+        default = "30d";
+        description = ''
+          retention time of prometheus data. If you want to serialize a really long time, use thanos.
+        '';
+      };
     };
-    port = mkOption {
+    telemetry.ports.prometheus = mkOption {
       type = int;
       default = 8090;
       description = ''
-        opentelemetry collector port to expose metrics for prometheus.
-      '';
-    };
-    retentionTime = mkOption {
-      type = str;
-      default = "30d";
-      description = ''
-        retention time of prometheus data. If you want to serialize a really long time, use thanos.
+        Port the OpenTelemetry collector exposes Prometheus metrics on.
+        Prometheus scrapes this port.
       '';
     };
   };
@@ -47,7 +50,7 @@ in
     (mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.metrics.hasSource) {
       services.opentelemetry-collector.settings = {
         service.pipelines.metrics.exporters = [ "prometheus" ];
-        exporters.prometheus.endpoint = "127.0.0.1:${toString cfg.port}";
+        exporters.prometheus.endpoint = "127.0.0.1:${toString config.telemetry.ports.prometheus}";
       };
 
       services.prometheus.scrapeConfigs = [
@@ -55,7 +58,7 @@ in
           job_name = "opentelemetry";
           metrics_path = "/metrics";
           scrape_interval = "10s";
-          static_configs = [ { targets = [ "localhost:${toString cfg.port}" ]; } ];
+          static_configs = [ { targets = [ "localhost:${toString config.telemetry.ports.prometheus}" ]; } ];
         }
       ];
 

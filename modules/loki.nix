@@ -3,22 +3,24 @@ let
   cfg = config.telemetry.loki;
 in
 {
-  options.telemetry.loki = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = ''
-        Enable Loki as a log storage backend.
-        When combined with `telemetry.enable`, logs collected by the
-        OpenTelemetry collector are pushed to Loki.
-      '';
+  options = {
+    telemetry.loki = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = ''
+          Enable Loki as a log storage backend.
+          When combined with `telemetry.enable`, logs collected by the
+          OpenTelemetry collector are pushed to Loki.
+        '';
+      };
     };
-
-    port = lib.mkOption {
+    telemetry.ports.loki = lib.mkOption {
       type = lib.types.int;
       default = 3100;
       description = ''
         Port the Loki HTTP server listens on.
+        The OpenTelemetry collector sends logs to this port.
       '';
     };
   };
@@ -31,7 +33,7 @@ in
       services.loki = {
         enable = lib.mkDefault true;
         configuration = {
-          server.http_listen_port = cfg.port;
+          server.http_listen_port = config.telemetry.ports.loki;
 
           auth_enabled = false;
 
@@ -100,7 +102,7 @@ in
     (lib.mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.logs.hasSource) {
       services.opentelemetry-collector.settings = {
         exporters."otlphttp/loki" = {
-          endpoint = "http://127.0.0.1:${toString cfg.port}/otlp";
+          endpoint = "http://127.0.0.1:${toString config.telemetry.ports.loki}/otlp";
         };
         service.pipelines.logs.exporters = [ "otlphttp/loki" ];
       };

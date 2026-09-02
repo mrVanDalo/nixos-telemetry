@@ -10,33 +10,36 @@ let
   cfg = config.telemetry.telegraf;
 in
 {
-  options.telemetry.telegraf = {
-    enable = mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = ''
-        enable telegraf to collect metrics.
-      '';
+  options = {
+    telemetry.telegraf = {
+      enable = mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = ''
+          enable telegraf to collect metrics.
+        '';
+      };
+      inputs.procstat.enable = mkOption {
+        type = bool;
+        default = false;
+        description = ''
+          Enable process statistics metrics collection via telegraf.
+        '';
+      };
+      inputs.zfs.enable = mkOption {
+        type = bool;
+        default = false;
+        description = ''
+          Enable zfs metrics collection via telegraf.
+        '';
+      };
     };
-    port = mkOption {
+    telemetry.ports.telegraf = mkOption {
       type = int;
       default = 8088;
       description = ''
-        influxdb port opened by opentelemetry collector which telemetry will send metrics to.
-      '';
-    };
-    inputs.procstat.enable = mkOption {
-      type = bool;
-      default = false;
-      description = ''
-        Enable process statistics metrics collection via telegraf.
-      '';
-    };
-    inputs.zfs.enable = mkOption {
-      type = bool;
-      default = false;
-      description = ''
-        Enable zfs metrics collection via telegraf.
+        InfluxDB receiver port opened by the OpenTelemetry collector.
+        Telegraf sends metrics to this port.
       '';
     };
   };
@@ -49,12 +52,12 @@ in
 
       # opentelemetry wireing
       services.opentelemetry-collector.settings = {
-        receivers.influxdb.endpoint = "127.0.0.1:${toString cfg.port}";
+        receivers.influxdb.endpoint = "127.0.0.1:${toString config.telemetry.ports.telegraf}";
         service.pipelines.metrics.receivers = [ "influxdb" ];
       };
 
       services.telegraf.extraConfig.outputs.influxdb_v2.urls = [
-        "http://127.0.0.1:${toString cfg.port}"
+        "http://127.0.0.1:${toString config.telemetry.ports.telegraf}"
       ];
 
     })

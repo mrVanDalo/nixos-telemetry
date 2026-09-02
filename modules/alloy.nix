@@ -3,21 +3,23 @@ let
   cfg = config.telemetry.alloy;
 in
 {
-  options.telemetry.alloy = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = ''
-        Enable grafana-alloy to scrape journal logs.
-        This is the replacement for promtail which reached end of life.
-      '';
+  options = {
+    telemetry.alloy = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = ''
+          Enable grafana-alloy to scrape journal logs.
+          This is the replacement for promtail which reached end of life.
+        '';
+      };
     };
-    port = lib.mkOption {
+    telemetry.ports.alloy = lib.mkOption {
       type = lib.types.int;
       default = 3500;
       description = ''
-        Port of the local Loki-compatible receiver.
-        This is the port alloy will send logs to.
+        Loki receiver port opened by the OpenTelemetry collector.
+        Alloy sends journal logs to this port.
       '';
     };
   };
@@ -32,7 +34,7 @@ in
         service.pipelines.logs.receivers = [ "loki" ];
 
         receivers.loki = {
-          protocols.http.endpoint = "127.0.0.1:${toString cfg.port}";
+          protocols.http.endpoint = "127.0.0.1:${toString config.telemetry.ports.alloy}";
           use_incoming_timestamp = true;
         };
 
@@ -288,7 +290,7 @@ in
 
         loki.write "endpoint" {
           endpoint {
-            url = "http://127.0.0.1:${toString cfg.port}/loki/api/v1/push"
+            url = "http://127.0.0.1:${toString config.telemetry.ports.alloy}/loki/api/v1/push"
           }
         }
       '';

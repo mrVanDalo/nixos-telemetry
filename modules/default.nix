@@ -57,6 +57,7 @@ with types;
     ./prometheus.nix
     ./netdata.nix
     ./grafana.nix
+    ./renamed.nix
   ];
 
   config = {

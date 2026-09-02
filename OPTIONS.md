@@ -11,10 +11,10 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix)
 
-## telemetry.alloy.port
+## telemetry.ports.alloy
 
-Port of the local Loki-compatible receiver. This is the port alloy will send
-logs to.
+Loki receiver port opened by the OpenTelemetry collector. Alloy sends journal
+logs to this port.
 
 _Type:_ `signed integer`
 
@@ -122,9 +122,10 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix)
 
-## telemetry.loki.port
+## telemetry.ports.loki
 
-Port the Loki HTTP server listens on.
+Port the Loki HTTP server listens on. The OpenTelemetry collector sends logs to
+this port.
 
 _Type:_ `signed integer`
 
@@ -146,9 +147,10 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix)
 
-## telemetry.netdata.port
+## telemetry.ports.netdata
 
-Port netdata exposes its metrics on.
+Port netdata exposes its metrics on. The OpenTelemetry collector scrapes
+metrics from this port.
 
 _Type:_ `signed integer`
 
@@ -216,9 +218,10 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix)
 
-## telemetry.prometheus.port
+## telemetry.ports.prometheus
 
-opentelemetry collector port to expose metrics for prometheus.
+Port the OpenTelemetry collector exposes Prometheus metrics on. Prometheus
+scrapes this port.
 
 _Type:_ `signed integer`
 
@@ -277,10 +280,10 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
 
-## telemetry.telegraf.port
+## telemetry.ports.telegraf
 
-influxdb port opened by opentelemetry collector which telemetry will send
-metrics to.
+InfluxDB receiver port opened by the OpenTelemetry collector. Telegraf sends
+metrics to this port.
 
 _Type:_ `signed integer`
 

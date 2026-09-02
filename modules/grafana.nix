@@ -196,7 +196,7 @@ in
           name = "OTLP Loki";
           type = "loki";
           access = "proxy";
-          url = "http://127.0.0.1:${toString config.telemetry.loki.port}";
+          url = "http://127.0.0.1:${toString config.telemetry.ports.loki}";
           isDefault = false;
           jsonData = {
             maxLines = 1000;
