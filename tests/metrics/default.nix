@@ -23,8 +23,7 @@
               telegraf.enable = true;
               netdata.enable = true;
               prometheus.enable = true;
-              telegraf.inputs.procstat.enable = true;
-              telegraf.inputs.zfs.enable = true;
+              telegraf.inputs.procstat.pattern = ".";
             };
           };
 

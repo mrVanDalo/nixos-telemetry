@@ -128,8 +128,8 @@ in
     (mkIf
       (
         config.telemetry.enable
-        && config.telemetry.pipelines.metrics.hasSource
-        && config.telemetry.pipelines.metrics.hasSink
+        && config.telemetry.pipelines.metrics.hasReceiver
+        && config.telemetry.pipelines.metrics.hasExporter
       )
       {
         services.opentelemetry-collector.settings = {
@@ -144,8 +144,8 @@ in
     (mkIf
       (
         config.telemetry.enable
-        && config.telemetry.pipelines.logs.hasSource
-        && config.telemetry.pipelines.logs.hasSink
+        && config.telemetry.pipelines.logs.hasReceiver
+        && config.telemetry.pipelines.logs.hasExporter
       )
       {
         services.opentelemetry-collector.settings = {
@@ -164,7 +164,7 @@ in
       (
         cfg.exporter.debug != null
         && config.telemetry.enable
-        && config.telemetry.pipelines.${cfg.exporter.debug}.hasSource
+        && config.telemetry.pipelines.${cfg.exporter.debug}.hasReceiver
       )
       {
         services.opentelemetry-collector.settings = {
@@ -195,7 +195,7 @@ in
       (
         cfg.exporter.endpoints != { }
         && config.telemetry.enable
-        && config.telemetry.pipelines.logs.hasSource
+        && config.telemetry.pipelines.logs.hasReceiver
       )
       {
         services.opentelemetry-collector.settings.service.pipelines.logs.exporters = map (
@@ -207,7 +207,7 @@ in
       (
         cfg.exporter.endpoints != { }
         && config.telemetry.enable
-        && config.telemetry.pipelines.metrics.hasSource
+        && config.telemetry.pipelines.metrics.hasReceiver
       )
       {
         services.opentelemetry-collector.settings.service.pipelines.metrics.exporters = map (
@@ -223,12 +223,14 @@ in
         cfg.receiver.endpoint;
     })
     (mkIf (
-      cfg.receiver.endpoint != null && config.telemetry.enable && config.telemetry.pipelines.logs.hasSink
+      cfg.receiver.endpoint != null
+      && config.telemetry.enable
+      && config.telemetry.pipelines.logs.hasExporter
     ) { services.opentelemetry-collector.settings.service.pipelines.logs.receivers = [ "otlp" ]; })
     (mkIf (
       cfg.receiver.endpoint != null
       && config.telemetry.enable
-      && config.telemetry.pipelines.metrics.hasSink
+      && config.telemetry.pipelines.metrics.hasExporter
     ) { services.opentelemetry-collector.settings.service.pipelines.metrics.receivers = [ "otlp" ]; })
 
     # disable collector internal metrics

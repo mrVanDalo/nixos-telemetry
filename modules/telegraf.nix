@@ -16,21 +16,21 @@ in
         type = lib.types.bool;
         default = false;
         description = ''
-          enable telegraf to collect metrics.
+          Convenience option that enables `services.telegraf.enable` with opinionated
+          defaults and wires it as a metrics source into the OpenTelemetry collector.
+
+          Even without this flag, if `services.telegraf.enable = true` is set directly,
+          the OTel wiring still happens automatically.
         '';
       };
-      inputs.procstat.enable = mkOption {
-        type = bool;
-        default = false;
+      inputs.procstat.pattern = mkOption {
+        type = nullOr str;
+        default = null;
         description = ''
-          Enable process statistics metrics collection via telegraf.
-        '';
-      };
-      inputs.zfs.enable = mkOption {
-        type = bool;
-        default = false;
-        description = ''
-          Enable zfs metrics collection via telegraf.
+          Process name pattern to collect metrics from (e.g. "nginx", "java", "." for all).
+          Passed directly to telegraf's procstat input `pattern` option.
+          This is intentionally not auto-detected because collecting metrics
+          for every running process can heavily pollute the metrics output.
         '';
       };
     };
@@ -48,19 +48,27 @@ in
 
     # wire telegraf with opentelemetry
     # -------------------------------
-    (mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.metrics.hasSink) {
+    (mkIf
+      (
+        config.telemetry.enable
+        && config.services.telegraf.enable
+        && config.telemetry.pipelines.metrics.hasExporter
+      )
+      {
 
-      # opentelemetry wireing
-      services.opentelemetry-collector.settings = {
-        receivers.influxdb.endpoint = "127.0.0.1:${toString config.telemetry.ports.telegraf}";
-        service.pipelines.metrics.receivers = [ "influxdb" ];
-      };
+        services.opentelemetry-collector.settings = {
+          service.pipelines.metrics.receivers = [ "influxdb" ];
+          receivers.influxdb = {
+            endpoint = "127.0.0.1:${toString config.telemetry.ports.telegraf}";
+          };
+        };
 
-      services.telegraf.extraConfig.outputs.influxdb_v2.urls = [
-        "http://127.0.0.1:${toString config.telemetry.ports.telegraf}"
-      ];
+        services.telegraf.extraConfig.outputs.influxdb_v2.urls = [
+          "http://127.0.0.1:${toString config.telemetry.ports.telegraf}"
+        ];
 
-    })
+      }
+    )
 
     # configure telegraf
     # -----------------
@@ -69,7 +77,7 @@ in
       systemd.services.telegraf.path = [ pkgs.inetutils ];
 
       services.telegraf = {
-        enable = mkDefault true;
+        enable = true;
         extraConfig = {
           global_tags = {
             instance_name = config.networking.hostName; # this will end up as `instance` label  in  prometheus
@@ -95,19 +103,20 @@ in
       };
     })
 
-    # process statistics metrics collection
-    # --------------------------------------
-    (mkIf (config.telemetry.enable && cfg.enable && cfg.inputs.procstat.enable) {
-      services.telegraf.extraConfig.inputs.procstat.pattern = ".";
-    })
-
     # zfs metrics collection
     # -----------------------
-    (mkIf (config.telemetry.enable && cfg.enable && cfg.inputs.zfs.enable) {
+    (mkIf (config.telemetry.enable && config.boot.zfs.enabled && config.services.telegraf.enable) {
       services.telegraf.extraConfig.inputs.zfs = {
-        poolMetrics = mkDefault true;
-        datasetMetrics = mkDefault true;
+        poolMetrics = true;
+        datasetMetrics = true;
       };
     })
+
+    # process statistics metrics collection
+    # --------------------------------------
+    (mkIf (config.telemetry.enable && cfg.enable && cfg.inputs.procstat.pattern != null) {
+      services.telegraf.extraConfig.inputs.procstat.pattern = cfg.inputs.procstat.pattern;
+    })
+
   ];
 }

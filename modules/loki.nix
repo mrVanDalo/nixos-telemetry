@@ -9,9 +9,11 @@ in
         type = lib.types.bool;
         default = false;
         description = ''
-          Enable Loki as a log storage backend.
-          When combined with `telemetry.enable`, logs collected by the
-          OpenTelemetry collector are pushed to Loki.
+          Convenience option that enables `services.loki.enable` with opinionated
+          defaults and wires it as a log sink into the OpenTelemetry collector. 
+
+          Even without this flag, if `services.loki.enable = true` is set directly,
+          the collector pushes logs to Loki automatically.
         '';
       };
     };
@@ -99,18 +101,25 @@ in
 
     # wire opentelemetry collector → loki (via OTLP HTTP, loki exporter was removed in otel 0.155+)
     # --------------------------------------------------------------
-    (lib.mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.logs.hasSource) {
-      services.opentelemetry-collector.settings = {
-        exporters."otlphttp/loki" = {
-          endpoint = "http://127.0.0.1:${toString config.telemetry.ports.loki}/otlp";
+    (lib.mkIf
+      (
+        config.telemetry.enable
+        && config.services.loki.enable
+        && config.telemetry.pipelines.logs.hasReceiver
+      )
+      {
+        services.opentelemetry-collector.settings = {
+          exporters."otlphttp/loki" = {
+            endpoint = "http://127.0.0.1:${toString config.services.loki.configuration.server.http_listen_port}/otlp";
+          };
+          service.pipelines.logs.exporters = [ "otlphttp/loki" ];
         };
-        service.pipelines.logs.exporters = [ "otlphttp/loki" ];
-      };
 
-      # start the collector after loki so its first export doesn't hit
-      # "connection refused" while loki is still coming up
-      systemd.services.opentelemetry-collector.after = [ "loki.service" ];
-    })
+        # start the collector after loki so its first export doesn't hit
+        # "connection refused" while loki is still coming up
+        systemd.services.opentelemetry-collector.after = [ "loki.service" ];
+      }
+    )
 
   ];
 }

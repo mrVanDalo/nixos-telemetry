@@ -41,11 +41,11 @@
               enable = true;
               opentelemetry = {
                 receiver.endpoint = "0.0.0.0:4317";
-                # `exporter.debug = "logs"` makes logs.hasSink true so the OTLP
+                # `exporter.debug = "logs"` makes logs.hasExporter true so the OTLP
                 # receiver is wired into the logs pipeline.
                 exporter.debug = "logs";
               };
-              # prometheus is the metrics sink: it makes metrics.hasSink true so
+              # prometheus is the metrics sink: it makes metrics.hasExporter true so
               # the OTLP receiver is wired into the metrics pipeline, then scrapes
               # the collector's prometheus exporter.
               prometheus.enable = true;

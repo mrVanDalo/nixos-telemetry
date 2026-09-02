@@ -8,13 +8,22 @@ everything to another OpenTelemetry collector on a remote machine.
 
 ## How it works
 
-Turn on the system with `telemetry.enable = true`. Every app is opt-in and
-defaults to `false`. Enable each one you need with
-`telemetry.<app>.enable = true`.
+Turn on the system with `telemetry.enable = true`. Telemetry services are
+auto-wired into the OpenTelemetry collector whenever they are enabled — whether
+through the convenience option `telemetry.<app>.enable = true`, or by setting
+`services.<app>.enable = true` directly. The collector receives, transforms, and
+forwards their data.
 
 The collector starts automatically once a complete pipeline exists. A pipeline
-is complete when a source and a sink are both enabled for the same signal type.
+is complete when a source and a sink are both active for the same signal type.
 Without a matching pair the collector has nothing to do and will not start.
+
+Each `telemetry.<app>.enable` option enables the underlying NixOS service with
+opinionated defaults. If you prefer to manage the service configuration
+yourself, just set `services.<app>.enable = true` directly — with
+`telemetry.enable = true` set, the OTel wiring kicks in regardless of which
+option you used. Without `telemetry.enable`, services are not wired into a
+collector.
 
 | Signal    | Receivers (sources)                         | Exporters (sinks)                            |
 | --------- | ------------------------------------------- | -------------------------------------------- |

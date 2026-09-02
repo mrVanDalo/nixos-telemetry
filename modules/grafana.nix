@@ -13,8 +13,12 @@ in
       type = lib.types.bool;
       default = false;
       description = ''
-        Enable Grafana and auto-provision datasources for any
-        telemetry backends that are enabled (Loki, Prometheus).
+        Convenience option that enables `services.grafana.enable` with opinionated
+        defaults and auto-provisions datasources for any telemetry backends that
+        are enabled (Loki, Prometheus).
+
+        Even without this flag, if `services.grafana.enable = true` is set directly,
+        the datasource provisioning still happens automatically.
       '';
     };
     http_port = lib.mkOption {

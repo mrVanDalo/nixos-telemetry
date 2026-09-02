@@ -15,7 +15,12 @@ in
         type = bool;
         default = false;
         description = ''
-          enable netdata to collect metrics.
+          Convenience option that enables `services.netdata.enable` with opinionated
+          defaults and wires it as a metrics source into the OpenTelemetry collector.
+
+          Even without this flag, if `services.netdata.enable = true` is set directly,
+          the OTel wiring still happens automatically — the collector scrapes metrics
+          from any enabled Netdata instance.
         '';
       };
     };
@@ -23,8 +28,8 @@ in
       type = int;
       default = 19999;
       description = ''
-        Port netdata exposes its metrics on.
-        The OpenTelemetry collector scrapes metrics from this port.
+        Prometheus receiver port opened by the OpenTelemetry collector.
+        Netdata exposes metrics that the OpenTelemetry collector scrapes from this port.
       '';
     };
   };
@@ -47,21 +52,28 @@ in
 
     # wire netdata with opentelemetry
     # -------------------------------
-    (mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.metrics.hasSink) {
-      services.opentelemetry-collector.settings = {
+    (mkIf
+      (
+        config.telemetry.enable
+        && config.services.netdata.enable
+        && config.telemetry.pipelines.metrics.hasExporter
+      )
+      {
+        services.opentelemetry-collector.settings = {
 
-        service.pipelines.metrics.receivers = [ "prometheus" ];
+          service.pipelines.metrics.receivers = [ "prometheus" ];
 
-        receivers.prometheus.config.scrape_configs = [
-          {
-            job_name = "netdata";
-            scrape_interval = "10s";
-            metrics_path = "/api/v1/allmetrics";
-            params.format = [ "prometheus" ];
-            static_configs = [ { targets = [ "127.0.0.1:${toString config.telemetry.ports.netdata}" ]; } ];
-          }
-        ];
-      };
-    })
+          receivers.prometheus.config.scrape_configs = [
+            {
+              job_name = "netdata";
+              scrape_interval = "10s";
+              metrics_path = "/api/v1/allmetrics";
+              params.format = [ "prometheus" ];
+              static_configs = [ { targets = [ "127.0.0.1:${toString config.telemetry.ports.netdata}" ]; } ];
+            }
+          ];
+        };
+      }
+    )
   ];
 }
