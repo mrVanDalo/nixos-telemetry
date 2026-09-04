@@ -14,6 +14,17 @@ with types;
       '';
     };
 
+    autowire.enable = mkOption {
+      type = bool;
+      default = true;
+      description = ''
+        Master switch for automatically wiring telemetry collection
+        for services detected on the machine (e.g. nginx, mysql, docker).
+        Can be overridden per collector and per app,
+        e.g. `telemetry.telegraf.autowire.mysql.enable`.
+      '';
+    };
+
     # internal: whether the metrics/logs pipeline will have both a source and a sink.
     # pipeline fragments (receivers/exporters/processors) are only created when both exist,
     # so the OTel collector never sees a pipeline with missing receivers or exporters.
@@ -56,6 +67,7 @@ with types;
     ./telegraf.nix
     ./prometheus.nix
     ./netdata.nix
+    ./ports.nix
     ./grafana.nix
     ./renamed.nix
   ];

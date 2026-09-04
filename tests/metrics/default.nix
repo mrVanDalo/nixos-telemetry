@@ -9,7 +9,7 @@
       checks.metrics = pkgs.testers.runNixOSTest {
         name = "metrics";
 
-        # machine: telegraf + netdata -> opentelemetry -> prometheus, procstat + zfs exporters
+        # machine: telegraf + netdata -> opentelemetry -> prometheus, procstat exporter
         nodes.machine =
           { ... }:
           {
@@ -23,8 +23,7 @@
               telegraf.enable = true;
               netdata.enable = true;
               prometheus.enable = true;
-              telegraf.inputs.procstat.enable = true;
-              telegraf.inputs.zfs.enable = true;
+              telegraf.inputs.procstat.pattern = ".";
             };
           };
 

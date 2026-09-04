@@ -11,18 +11,19 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix)
 
-## telemetry.ports.alloy
+## telemetry.autowire.enable
 
-Loki receiver port opened by the OpenTelemetry collector. Alloy sends journal
-logs to this port.
+Master switch for automatically wiring telemetry collection for services
+detected on the machine (e.g. nginx, mysql, docker). Can be overridden per
+collector and per app, e.g. `telemetry.telegraf.autowire.mysql.enable`.
 
-_Type:_ `signed integer`
+_Type:_ `boolean`
 
-_Default:_ `3500`
+_Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules)
 
 ## telemetry.enable
 
@@ -122,19 +123,6 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix)
 
-## telemetry.ports.loki
-
-Port the Loki HTTP server listens on. The OpenTelemetry collector sends logs to
-this port.
-
-_Type:_ `signed integer`
-
-_Default:_ `3100`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix)
-
 ## telemetry.netdata.enable
 
 enable netdata to collect metrics.
@@ -142,19 +130,6 @@ enable netdata to collect metrics.
 _Type:_ `boolean`
 
 _Default:_ `false`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix)
-
-## telemetry.ports.netdata
-
-Port netdata exposes its metrics on. The OpenTelemetry collector scrapes
-metrics from this port.
-
-_Type:_ `signed integer`
-
-_Default:_ `19999`
 
 _Declared by:_
 
@@ -205,18 +180,56 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/opentelemetry.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/opentelemetry.nix)
 
-## telemetry.prometheus.enable
+## telemetry.ports.alloy
 
-enable prometheus and configure it to scrape opentelemetry collector metrics (in
-case `telemetry.enable = true`).
+Loki receiver port opened by the OpenTelemetry collector. Alloy sends journal
+logs to this port.
 
-_Type:_ `boolean`
+_Type:_ `signed integer`
 
-_Default:_ `false`
+_Default:_ `3500`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix)
+
+## telemetry.ports.loki
+
+Port the Loki HTTP server listens on. The OpenTelemetry collector sends logs to
+this port.
+
+_Type:_ `signed integer`
+
+_Default:_ `3100`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix)
+
+## telemetry.ports.mongodb
+
+Port of the MongoDB server that telegraf scrapes metrics from.
+
+_Type:_ `signed integer`
+
+_Default:_ `27017`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/ports.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/ports.nix)
+
+## telemetry.ports.netdata
+
+Port netdata exposes its metrics on. The OpenTelemetry collector scrapes metrics
+from this port.
+
+_Type:_ `signed integer`
+
+_Default:_ `19999`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix)
 
 ## telemetry.ports.prometheus
 
@@ -226,6 +239,32 @@ scrapes this port.
 _Type:_ `signed integer`
 
 _Default:_ `8090`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix)
+
+## telemetry.ports.telegraf
+
+InfluxDB receiver port opened by the OpenTelemetry collector. Telegraf sends
+metrics to this port.
+
+_Type:_ `signed integer`
+
+_Default:_ `8088`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.prometheus.enable
+
+enable prometheus and configure it to scrape opentelemetry collector metrics (in
+case `telemetry.enable = true`).
+
+_Type:_ `boolean`
+
+_Default:_ `false`
 
 _Declared by:_
 
@@ -244,6 +283,223 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix)
 
+## telemetry.telegraf.autowire.chrony.enable
+
+Automatically scrape chrony metrics with telegraf if chrony is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.docker.enable
+
+Automatically scrape docker metrics with telegraf if docker is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.elasticsearch.enable
+
+Automatically scrape elasticsearch metrics with telegraf if elasticsearch is set
+up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.fail2ban.enable
+
+Automatically scrape fail2ban metrics with telegraf if fail2ban is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.libvirt.enable
+
+Automatically scrape libvirt metrics with telegraf if libvirt is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.memcached.enable
+
+Automatically scrape memcached metrics with telegraf if memcached is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.mongodb.enable
+
+Automatically scrape mongodb metrics with telegraf if mongodb is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.mysql.enable
+
+Automatically scrape mysql metrics with telegraf if mysql is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.nginx.enable
+
+Automatically scrape nginx metrics with telegraf if nginx is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.ntp.enable
+
+Automatically scrape ntp metrics with telegraf if ntp is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.nvidia.enable
+
+Automatically scrape nvidia metrics with telegraf if nvidia is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.podman.enable
+
+Automatically scrape podman metrics with telegraf if podman is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.prometheus.enable
+
+Automatically scrape prometheus metrics with telegraf if prometheus is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.rabbitmq.enable
+
+Automatically scrape rabbitmq metrics with telegraf if rabbitmq is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.smartd.enable
+
+Automatically scrape smartd metrics with telegraf if smartd is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.varnish.enable
+
+Automatically scrape varnish metrics with telegraf if varnish is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.wireless.enable
+
+Automatically scrape wireless metrics with telegraf if wireless is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.telegraf.autowire.zfs.enable
+
+Automatically scrape zfs metrics with telegraf if zfs is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
 ## telemetry.telegraf.enable
 
 enable telegraf to collect metrics.
@@ -256,38 +512,15 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
 
-## telemetry.telegraf.inputs.procstat.enable
+## telemetry.telegraf.inputs.procstat.pattern
 
-Enable process statistics metrics collection via telegraf.
+Regex pattern to select processes for procstat collection. This is not collected
+automatically because depending on the pattern the amount of metrics can become
+very big.
 
-_Type:_ `boolean`
+_Type:_ `null or string`
 
-_Default:_ `false`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
-
-## telemetry.telegraf.inputs.zfs.enable
-
-Enable zfs metrics collection via telegraf.
-
-_Type:_ `boolean`
-
-_Default:_ `false`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
-
-## telemetry.ports.telegraf
-
-InfluxDB receiver port opened by the OpenTelemetry collector. Telegraf sends
-metrics to this port.
-
-_Type:_ `signed integer`
-
-_Default:_ `8088`
+_Default:_ `null`
 
 _Declared by:_
 
