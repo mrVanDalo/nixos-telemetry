@@ -110,6 +110,33 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
 
+## telemetry.loki.disk_full_threshold
+
+Fraction of disk usage (0.0–1.0) at which Loki&#39;s ingester WAL starts
+rejecting incoming log pushes (upstream default: 0.9). When the disk holding
+/var/lib/loki is at or above this fraction, every push fails with HTTP 503 and
+the misleading error `Ingester is shutting down`; the OpenTelemetry collector
+then fills its sending queue and drops logs. Crossing the threshold is logged
+once by Loki (`disk usage exceeded threshold, throttling
+writes`), and the
+current usage is exposed as the metric `loki_ingester_wal_diskusage_percent`.
+
+Setting this to `null` disables the threshold entirely, so Loki keeps accepting
+pushes regardless of disk usage. On a truly full disk WAL writes can then fail
+and data can be lost — prefer freeing space, or set a high value (e.g. `0.97`)
+if the disk should stay protected.
+
+_Type:_
+`null or integer or floating point number between 0 and 1 (both inclusive)`
+
+_Default:_ `0.9`
+
+_Example:_ `0.97`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix)
+
 ## telemetry.loki.enable
 
 Enable Loki as a log storage backend. When combined with `telemetry.enable`,
