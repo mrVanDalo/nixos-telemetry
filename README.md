@@ -202,6 +202,37 @@ modules = [
 ...
 ```
 
+## Autowire
+
+The idea is that you configure services the usual NixOS way, and the telemetry
+system automatically collects telemetry from them.
+
+At the moment, only Telegraf does that, but other apps will follow.
+
+### Example
+
+```nix
+...
+virtualisation.docker.enable = true;
+...
+telemetry.enable = true;
+telemetry.telegraf.enable = true;
+...
+```
+
+Telegraf then monitors Docker.
+
+### How to disable autowiring
+
+If you don't want this feature at all, set
+[telemetry.autowire.enable](./OPTIONS.md#telemetryautowireenable) to `false`.
+Autowiring is then disabled for every collector and app.
+
+If you want to disable only specific services, use the service-related option of
+each collector, e.g.
+[telemetry.telegraf.autowire.docker.enable](./OPTIONS.md#telemetrytelegrafautowiredockerenable)
+from the example above.
+
 ## labels
 
 Here are labels, which we try to always set.
