@@ -133,7 +133,7 @@
             config = {
               telemetry.enable = lib.mkDefault true; # import this module should be convenient
               telemetry.alloy.enable = lib.mkDefault true; # collect container journal logs
-              services.journald.extraConfig = "SystemMaxUse=1G"; # no need for storing a lot of logs.
+              services.journald.settings.Journal.SystemMaxUse = "1G"; # no need for storing a lot of logs.
             };
           };
 
