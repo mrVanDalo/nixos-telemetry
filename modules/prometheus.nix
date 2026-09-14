@@ -38,28 +38,37 @@ with types;
       services.prometheus = {
         checkConfig = mkDefault "syntax-only";
         enable = mkDefault true;
-        extraFlags = mkDefault [ "--storage.tsdb.retention.time=${config.telemetry.prometheus.retentionTime}" ];
+        extraFlags = mkDefault [
+          "--storage.tsdb.retention.time=${config.telemetry.prometheus.retentionTime}"
+        ];
       };
     })
 
     # provide opentelemetry prometheus exporter
     # -----------------------------------------
-    (mkIf (config.telemetry.enable && config.telemetry.prometheus.enable && config.telemetry.pipelines.metrics.hasSource) {
-      services.opentelemetry-collector.settings = {
-        service.pipelines.metrics.exporters = [ "prometheus" ];
-        exporters.prometheus.endpoint = "127.0.0.1:${toString config.telemetry.ports.prometheus}";
-      };
+    (mkIf
+      (
+        config.telemetry.enable
+        && config.telemetry.prometheus.enable
+        && config.telemetry.pipelines.metrics.hasSource
+      )
+      {
+        services.opentelemetry-collector.settings = {
+          service.pipelines.metrics.exporters = [ "prometheus" ];
+          exporters.prometheus.endpoint = "127.0.0.1:${toString config.telemetry.ports.prometheus}";
+        };
 
-      services.prometheus.scrapeConfigs = [
-        {
-          job_name = "opentelemetry";
-          metrics_path = "/metrics";
-          scrape_interval = "10s";
-          static_configs = [ { targets = [ "localhost:${toString config.telemetry.ports.prometheus}" ]; } ];
-        }
-      ];
+        services.prometheus.scrapeConfigs = [
+          {
+            job_name = "opentelemetry";
+            metrics_path = "/metrics";
+            scrape_interval = "10s";
+            static_configs = [ { targets = [ "localhost:${toString config.telemetry.ports.prometheus}" ]; } ];
+          }
+        ];
 
-    })
+      }
+    )
 
   ];
 }

@@ -86,32 +86,38 @@
       let
         secretKeyFile = "${config.services.grafana.dataDir}/secret_key";
       in
-      lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.grafana.autogenerateSecretKey) {
-        services.grafana.settings.security.secret_key = lib.mkDefault "$__file{${secretKeyFile}}";
-        systemd.services.grafana.serviceConfig.ExecStartPre = lib.mkBefore [
-          (lib.getExe (
-            pkgs.writeShellScriptBin "grafana-generate-secret-key" ''
-              umask 077
-              if [ ! -f ${secretKeyFile} ]; then
-                echo ""
-                echo "╔═══════════════════════════════════════════════════════════════"
-                echo "║  Generating Grafana secret key"
-                echo "║  at ${secretKeyFile}"
-                echo "╚═══════════════════════════════════════════════════════════════"
-                echo ""
-                ${lib.getExe' pkgs.openssl "openssl"} rand -hex 32 > ${secretKeyFile}
-              else
-                echo ""
-                echo "╔═══════════════════════════════════════════════════════════════"
-                echo "║  Grafana secret key already exists, skipping generation"
-                echo "║  at ${secretKeyFile}"
-                echo "╚═══════════════════════════════════════════════════════════════"
-                echo ""
-              fi
-            ''
-          ))
-        ];
-      }
+      lib.mkIf
+        (
+          config.telemetry.enable
+          && config.telemetry.grafana.enable
+          && config.telemetry.grafana.autogenerateSecretKey
+        )
+        {
+          services.grafana.settings.security.secret_key = lib.mkDefault "$__file{${secretKeyFile}}";
+          systemd.services.grafana.serviceConfig.ExecStartPre = lib.mkBefore [
+            (lib.getExe (
+              pkgs.writeShellScriptBin "grafana-generate-secret-key" ''
+                umask 077
+                if [ ! -f ${secretKeyFile} ]; then
+                  echo ""
+                  echo "╔═══════════════════════════════════════════════════════════════"
+                  echo "║  Generating Grafana secret key"
+                  echo "║  at ${secretKeyFile}"
+                  echo "╚═══════════════════════════════════════════════════════════════"
+                  echo ""
+                  ${lib.getExe' pkgs.openssl "openssl"} rand -hex 32 > ${secretKeyFile}
+                else
+                  echo ""
+                  echo "╔═══════════════════════════════════════════════════════════════"
+                  echo "║  Grafana secret key already exists, skipping generation"
+                  echo "║  at ${secretKeyFile}"
+                  echo "╚═══════════════════════════════════════════════════════════════"
+                  echo ""
+                fi
+              ''
+            ))
+          ];
+        }
     )
 
     # admin access: auto-generated password
@@ -122,85 +128,111 @@
       let
         adminPasswordFile = "${config.services.grafana.dataDir}/admin_password";
       in
-      lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.grafana.adminAccess == "autogenerate") {
-        services.grafana.settings.security.admin_password = lib.mkDefault "$__file{${adminPasswordFile}}";
-        services.grafana.settings."auth.anonymous".enabled = lib.mkDefault false;
-        systemd.services.grafana.serviceConfig.ExecStartPre = lib.mkBefore [
-          (lib.getExe (
-            pkgs.writeShellScriptBin "grafana-generate-admin-password" ''
-              umask 077
-              if [ ! -f ${adminPasswordFile} ]; then
-                echo ""
-                echo "╔═══════════════════════════════════════════════════════════════"
-                echo "║  Generating Grafana admin password"
-                echo "║  at ${adminPasswordFile}"
-                echo "╚═══════════════════════════════════════════════════════════════"
-                echo ""
-                ${lib.getExe' pkgs.openssl "openssl"} rand -base64 24 > ${adminPasswordFile}
-              else
-                echo ""
-                echo "╔═══════════════════════════════════════════════════════════════"
-                echo "║  Grafana admin password already exists, skipping generation"
-                echo "║  at ${adminPasswordFile}"
-                echo "╚═══════════════════════════════════════════════════════════════"
-                echo ""
-              fi
-            ''
-          ))
-        ];
-      }
+      lib.mkIf
+        (
+          config.telemetry.enable
+          && config.telemetry.grafana.enable
+          && config.telemetry.grafana.adminAccess == "autogenerate"
+        )
+        {
+          services.grafana.settings.security.admin_password = lib.mkDefault "$__file{${adminPasswordFile}}";
+          services.grafana.settings."auth.anonymous".enabled = lib.mkDefault false;
+          systemd.services.grafana.serviceConfig.ExecStartPre = lib.mkBefore [
+            (lib.getExe (
+              pkgs.writeShellScriptBin "grafana-generate-admin-password" ''
+                umask 077
+                if [ ! -f ${adminPasswordFile} ]; then
+                  echo ""
+                  echo "╔═══════════════════════════════════════════════════════════════"
+                  echo "║  Generating Grafana admin password"
+                  echo "║  at ${adminPasswordFile}"
+                  echo "╚═══════════════════════════════════════════════════════════════"
+                  echo ""
+                  ${lib.getExe' pkgs.openssl "openssl"} rand -base64 24 > ${adminPasswordFile}
+                else
+                  echo ""
+                  echo "╔═══════════════════════════════════════════════════════════════"
+                  echo "║  Grafana admin password already exists, skipping generation"
+                  echo "║  at ${adminPasswordFile}"
+                  echo "╚═══════════════════════════════════════════════════════════════"
+                  echo ""
+                fi
+              ''
+            ))
+          ];
+        }
     )
 
     # admin access: anonymous viewer access
     # -------------------------------------
-    (lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.grafana.adminAccess == "anonymous") {
-      services.grafana.settings."auth.anonymous" = {
-        enabled = lib.mkDefault true;
-        org_role = lib.mkDefault "Admin";
-      };
-    })
+    (lib.mkIf
+      (
+        config.telemetry.enable
+        && config.telemetry.grafana.enable
+        && config.telemetry.grafana.adminAccess == "anonymous"
+      )
+      {
+        services.grafana.settings."auth.anonymous" = {
+          enabled = lib.mkDefault true;
+          org_role = lib.mkDefault "Admin";
+        };
+      }
+    )
 
     # admin access: force first-login password change
     # ------------------------------------------------
     # No anonymous access: real login required so the first-login
     # password change is actually triggered.
-    (lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.grafana.adminAccess == "firstLoginChange") {
-      services.grafana.settings."auth.anonymous".enabled = lib.mkDefault false;
-    })
+    (lib.mkIf
+      (
+        config.telemetry.enable
+        && config.telemetry.grafana.enable
+        && config.telemetry.grafana.adminAccess == "firstLoginChange"
+      )
+      {
+        services.grafana.settings."auth.anonymous".enabled = lib.mkDefault false;
+      }
+    )
 
     # provision prometheus datasource
     # -------------------------------
-    (lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.prometheus.enable) {
-      services.grafana.provision.datasources.settings.datasources = [
-        {
-          name = "OTLP Prometheus";
-          type = "prometheus";
-          access = "proxy";
-          url = "http://127.0.0.1:${toString config.services.prometheus.port}";
-          isDefault = true;
-          jsonData = {
-            timeInterval = "10s";
-          };
-        }
-      ];
-    })
+    (lib.mkIf
+      (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.prometheus.enable)
+      {
+        services.grafana.provision.datasources.settings.datasources = [
+          {
+            name = "OTLP Prometheus";
+            type = "prometheus";
+            access = "proxy";
+            url = "http://127.0.0.1:${toString config.services.prometheus.port}";
+            isDefault = true;
+            jsonData = {
+              timeInterval = "10s";
+            };
+          }
+        ];
+      }
+    )
 
     # provision loki datasource
     # -------------------------
-    (lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.loki.enable) {
-      services.grafana.provision.datasources.settings.datasources = [
-        {
-          name = "OTLP Loki";
-          type = "loki";
-          access = "proxy";
-          url = "http://127.0.0.1:${toString config.telemetry.ports.loki}";
-          isDefault = false;
-          jsonData = {
-            maxLines = 1000;
-          };
-        }
-      ];
-    })
+    (lib.mkIf
+      (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.loki.enable)
+      {
+        services.grafana.provision.datasources.settings.datasources = [
+          {
+            name = "OTLP Loki";
+            type = "loki";
+            access = "proxy";
+            url = "http://127.0.0.1:${toString config.telemetry.ports.loki}";
+            isDefault = false;
+            jsonData = {
+              maxLines = 1000;
+            };
+          }
+        ];
+      }
+    )
 
   ];
 }

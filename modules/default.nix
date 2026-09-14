@@ -69,6 +69,7 @@ with types;
     ./netdata.nix
     ./ports.nix
     ./grafana.nix
+    ./containers.nix
     ./renamed.nix
   ];
 
@@ -76,16 +77,17 @@ with types;
     telemetry.pipelines.metrics.hasSource =
       config.telemetry.telegraf.enable
       || config.telemetry.netdata.enable
-      || (config.telemetry.opentelemetry.receiver.endpoint != null);
-
+      || (config.telemetry.opentelemetry.receiver.endpoint != null)
+      || config.telemetry.pipelines.container.hasSharedNetworkContainer;
     telemetry.pipelines.metrics.hasSink =
       config.telemetry.prometheus.enable
       || (config.telemetry.opentelemetry.exporter.endpoints != { })
       || (config.telemetry.opentelemetry.exporter.debug == "metrics");
 
     telemetry.pipelines.logs.hasSource =
-      config.telemetry.alloy.enable || (config.telemetry.opentelemetry.receiver.endpoint != null);
-
+      config.telemetry.alloy.enable
+      || (config.telemetry.opentelemetry.receiver.endpoint != null)
+      || config.telemetry.pipelines.container.hasSharedNetworkContainer;
     telemetry.pipelines.logs.hasSink =
       config.telemetry.loki.enable
       || (config.telemetry.opentelemetry.exporter.endpoints != { })

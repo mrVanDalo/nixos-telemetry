@@ -137,6 +137,29 @@
             };
           };
 
+        nixosModules.container-telemetry-shared-net =
+          { lib, ... }:
+          {
+            imports = [ self.nixosModules.telemetry ];
+            config = {
+              # declares "I am a shared-network container": un-gates telegraf's
+              # loopback output without a local sink; alloy's URL is hardcoded
+              # to loopback already. Agents push to the host collector through
+              # the shared loopback.
+              telemetry.container.sharedNetwork = lib.mkDefault true;
+              # offset the container's alloy UI so it cannot clash with a host
+              # alloy on :12345
+              services.alloy.extraFlags = lib.mkDefault [
+                "--server.http.listen-addr=127.0.0.1:12346"
+              ];
+              services.journald.settings.Journal.SystemMaxUse = lib.mkDefault "1G";
+              # hard-off: in a shared-net container the host collector is the
+              # destination, a local collector would bind-clash with it.
+              # Re-enabling requires lib.mkOverride 49 — a deliberate act.
+              services.opentelemetry-collector.enable = lib.mkForce false;
+            };
+          };
+
         nixosModules.default = self.nixosModules.telemetry;
 
       };

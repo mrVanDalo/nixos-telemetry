@@ -1,7 +1,7 @@
 {
   imports = [
-    ./container-telemetry
-    ./container-telemetry-hostnet
+    ./container-telemetry-private-net
+    ./container-telemetry-shared-net
     ./metrics
     ./log-pipeline
     ./loki-grafana

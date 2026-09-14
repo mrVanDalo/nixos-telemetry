@@ -44,21 +44,28 @@ with types;
 
     # wire netdata with opentelemetry
     # -------------------------------
-    (mkIf (config.telemetry.enable && config.telemetry.netdata.enable && config.telemetry.pipelines.metrics.hasSink) {
-      services.opentelemetry-collector.settings = {
+    (mkIf
+      (
+        config.telemetry.enable
+        && config.telemetry.netdata.enable
+        && config.telemetry.pipelines.metrics.hasSink
+      )
+      {
+        services.opentelemetry-collector.settings = {
 
-        service.pipelines.metrics.receivers = [ "prometheus" ];
+          service.pipelines.metrics.receivers = [ "prometheus" ];
 
-        receivers.prometheus.config.scrape_configs = [
-          {
-            job_name = "netdata";
-            scrape_interval = "10s";
-            metrics_path = "/api/v1/allmetrics";
-            params.format = [ "prometheus" ];
-            static_configs = [ { targets = [ "127.0.0.1:${toString config.telemetry.ports.netdata}" ]; } ];
-          }
-        ];
-      };
-    })
+          receivers.prometheus.config.scrape_configs = [
+            {
+              job_name = "netdata";
+              scrape_interval = "10s";
+              metrics_path = "/api/v1/allmetrics";
+              params.format = [ "prometheus" ];
+              static_configs = [ { targets = [ "127.0.0.1:${toString config.telemetry.ports.netdata}" ]; } ];
+            }
+          ];
+        };
+      }
+    )
   ];
 }

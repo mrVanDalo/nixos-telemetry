@@ -220,7 +220,9 @@ with types;
         config.telemetry.opentelemetry.receiver.endpoint;
     })
     (mkIf (
-      config.telemetry.opentelemetry.receiver.endpoint != null && config.telemetry.enable && config.telemetry.pipelines.logs.hasSink
+      config.telemetry.opentelemetry.receiver.endpoint != null
+      && config.telemetry.enable
+      && config.telemetry.pipelines.logs.hasSink
     ) { services.opentelemetry-collector.settings.service.pipelines.logs.receivers = [ "otlp" ]; })
     (mkIf (
       config.telemetry.opentelemetry.receiver.endpoint != null

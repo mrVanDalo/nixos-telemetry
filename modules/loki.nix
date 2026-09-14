@@ -60,7 +60,10 @@
           # is the usage fraction at which Loki rejects log pushes with a
           # misleading `Ingester is shutting down` 503.
           ingester.wal.disk_full_threshold =
-            if config.telemetry.loki.disk_full_threshold == null then 0 else config.telemetry.loki.disk_full_threshold;
+            if config.telemetry.loki.disk_full_threshold == null then
+              0
+            else
+              config.telemetry.loki.disk_full_threshold;
 
           common = {
             ring.instance_addr = "127.0.0.1";
@@ -124,18 +127,23 @@
 
     # wire opentelemetry collector → loki (via OTLP HTTP, loki exporter was removed in otel 0.155+)
     # --------------------------------------------------------------
-    (lib.mkIf (config.telemetry.enable && config.telemetry.loki.enable && config.telemetry.pipelines.logs.hasSource) {
-      services.opentelemetry-collector.settings = {
-        exporters."otlphttp/loki" = {
-          endpoint = "http://127.0.0.1:${toString config.telemetry.ports.loki}/otlp";
+    (lib.mkIf
+      (
+        config.telemetry.enable && config.telemetry.loki.enable && config.telemetry.pipelines.logs.hasSource
+      )
+      {
+        services.opentelemetry-collector.settings = {
+          exporters."otlphttp/loki" = {
+            endpoint = "http://127.0.0.1:${toString config.telemetry.ports.loki}/otlp";
+          };
+          service.pipelines.logs.exporters = [ "otlphttp/loki" ];
         };
-        service.pipelines.logs.exporters = [ "otlphttp/loki" ];
-      };
 
-      # start the collector after loki so its first export doesn't hit
-      # "connection refused" while loki is still coming up
-      systemd.services.opentelemetry-collector.after = [ "loki.service" ];
-    })
+        # start the collector after loki so its first export doesn't hit
+        # "connection refused" while loki is still coming up
+        systemd.services.opentelemetry-collector.after = [ "loki.service" ];
+      }
+    )
 
   ];
 }
