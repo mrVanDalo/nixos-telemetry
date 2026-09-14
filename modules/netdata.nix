@@ -5,9 +5,6 @@
 }:
 with lib;
 with types;
-let
-  cfg = config.telemetry.netdata;
-in
 {
   options = {
     telemetry.netdata = {
@@ -33,7 +30,7 @@ in
 
     # configure netdata
     # -----------------
-    (mkIf (config.telemetry.enable && cfg.enable) {
+    (mkIf (config.telemetry.enable && config.telemetry.netdata.enable) {
       # https://docs.netdata.cloud/daemon/config/
       services.netdata = {
         enable = lib.mkDefault true;
@@ -47,7 +44,7 @@ in
 
     # wire netdata with opentelemetry
     # -------------------------------
-    (mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.metrics.hasSink) {
+    (mkIf (config.telemetry.enable && config.telemetry.netdata.enable && config.telemetry.pipelines.metrics.hasSink) {
       services.opentelemetry-collector.settings = {
 
         service.pipelines.metrics.receivers = [ "prometheus" ];

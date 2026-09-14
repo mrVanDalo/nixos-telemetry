@@ -1,7 +1,4 @@
 { config, lib, ... }:
-let
-  cfg = config.telemetry.alloy;
-in
 {
   options = {
     telemetry.alloy = {
@@ -28,7 +25,7 @@ in
 
     # opentelemetry shipment
     # -----------------------
-    (lib.mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.logs.hasSink) {
+    (lib.mkIf (config.telemetry.enable && config.telemetry.alloy.enable && config.telemetry.pipelines.logs.hasSink) {
       services.opentelemetry-collector.settings = {
 
         service.pipelines.logs.receivers = [ "loki" ];
@@ -44,7 +41,7 @@ in
 
     # alloy configuration
     # --------------------
-    (lib.mkIf (config.telemetry.enable && cfg.enable) {
+    (lib.mkIf (config.telemetry.enable && config.telemetry.alloy.enable) {
 
       services.alloy.enable = lib.mkDefault true;
 

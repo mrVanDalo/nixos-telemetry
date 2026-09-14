@@ -7,8 +7,6 @@
 with lib;
 with types;
 let
-  cfg = config.telemetry.telegraf;
-
   # For TCP, dial a reachable address: wildcards resolve to loopback,
   # anything else is used as configured. IPv6 hosts are bracketed because
   # the plugin parses the address with net.SplitHostPort, which rejects
@@ -92,7 +90,7 @@ in
     };
   };
 
-  config = lib.mkIf (config.telemetry.enable && cfg.enable) (
+  config = lib.mkIf (config.telemetry.enable && config.telemetry.telegraf.enable) (
     lib.mkMerge [
 
       # wire telegraf with opentelemetry
@@ -146,13 +144,13 @@ in
 
       # process statistics metrics collection
       # --------------------------------------
-      (mkIf (cfg.inputs.procstat.pattern != null) {
-        services.telegraf.extraConfig.inputs.procstat.pattern = cfg.inputs.procstat.pattern;
+      (mkIf (config.telemetry.telegraf.inputs.procstat.pattern != null) {
+        services.telegraf.extraConfig.inputs.procstat.pattern = config.telemetry.telegraf.inputs.procstat.pattern;
       })
 
       # zfs metrics collection
       # -----------------------
-      (mkIf (cfg.autowire.zfs.enable && config.boot.zfs.enabled) {
+      (mkIf (config.telemetry.telegraf.autowire.zfs.enable && config.boot.zfs.enabled) {
         services.telegraf.extraConfig.inputs.zfs = {
           poolMetrics = mkDefault true;
           datasetMetrics = mkDefault true;
@@ -160,7 +158,7 @@ in
       })
       # docker metrics collection
       # --------------------------
-      (mkIf (cfg.autowire.docker.enable && config.virtualisation.docker.enable) {
+      (mkIf (config.telemetry.telegraf.autowire.docker.enable && config.virtualisation.docker.enable) {
         services.telegraf.extraConfig.inputs.docker = { };
         users.users.telegraf.extraGroups = [ "docker" ];
       })
@@ -169,7 +167,7 @@ in
       # --------------------------
       (mkIf
         (
-          cfg.autowire.podman.enable
+          config.telemetry.telegraf.autowire.podman.enable
           && config.virtualisation.podman.enable
           && config.virtualisation.podman.dockerSocket.enable
         )
@@ -184,7 +182,7 @@ in
       # nginx metrics collection
       # -------------------------
       (mkIf
-        (cfg.autowire.nginx.enable && config.services.nginx.enable && config.services.nginx.statusPage)
+        (config.telemetry.telegraf.autowire.nginx.enable && config.services.nginx.enable && config.services.nginx.statusPage)
         {
           services.telegraf.extraConfig.inputs.nginx.urls = [
             "http://127.0.0.1:${toString config.services.nginx.defaultHTTPListenPort}/nginx_status"
@@ -226,7 +224,7 @@ in
 
       # memcached metrics collection
       # -----------------------------
-      (mkIf (cfg.autowire.memcached.enable && config.services.memcached.enable) (mkMerge [
+      (mkIf (config.telemetry.telegraf.autowire.memcached.enable && config.services.memcached.enable) (mkMerge [
         (mkIf (config.services.memcached.enableUnixSocket) {
           # memcached creates the socket with the service umask; 0007 makes
           # it group-writable so the telegraf user can connect through it.
@@ -243,7 +241,7 @@ in
 
       # elasticsearch metrics collection
       # ---------------------------------
-      (mkIf (cfg.autowire.elasticsearch.enable && config.services.elasticsearch.enable) {
+      (mkIf (config.telemetry.telegraf.autowire.elasticsearch.enable && config.services.elasticsearch.enable) {
         services.telegraf.extraConfig.inputs.elasticsearch = {
           servers = [
             "http://${reachableHost config.services.elasticsearch.listenAddress}:${toString config.services.elasticsearch.port}"
@@ -257,7 +255,7 @@ in
         let
           socket = config.services.mysql.settings.mysqld.socket or "/run/mysqld/mysqld.sock";
         in
-        mkIf (cfg.autowire.mysql.enable && config.services.mysql.enable) {
+        mkIf (config.telemetry.telegraf.autowire.mysql.enable && config.services.mysql.enable) {
           services.mysql.ensureUsers = [
             {
               name = "telegraf";
@@ -272,7 +270,7 @@ in
 
       # mongodb metrics collection
       # ---------------------------
-      (mkIf (cfg.autowire.mongodb.enable && config.services.mongodb.enable) {
+      (mkIf (config.telemetry.telegraf.autowire.mongodb.enable && config.services.mongodb.enable) {
         services.telegraf.extraConfig.inputs.mongodb.servers = [
           "mongodb://${reachableHost config.services.mongodb.bind_ip}:${toString config.telemetry.ports.mongodb}/?connect=direct"
         ];
@@ -280,7 +278,7 @@ in
 
       # rabbitmq metrics collection
       # ----------------------------
-      (mkIf (cfg.autowire.rabbitmq.enable && config.services.rabbitmq.managementPlugin.enable) {
+      (mkIf (config.telemetry.telegraf.autowire.rabbitmq.enable && config.services.rabbitmq.managementPlugin.enable) {
         services.telegraf.extraConfig.inputs.rabbitmq = {
           # the management plugin binds to `listenAddress`, see upstream `management.tcp.ip`
           url = "http://${reachableHost config.services.rabbitmq.listenAddress}:${toString config.services.rabbitmq.managementPlugin.port}";
@@ -301,7 +299,7 @@ in
 
       # smart disk health metrics collection
       # -------------------------------------
-      (mkIf (cfg.autowire.smartd.enable && config.services.smartd.enable) {
+      (mkIf (config.telemetry.telegraf.autowire.smartd.enable && config.services.smartd.enable) {
         services.telegraf.extraConfig.inputs.smart = {
           use_sudo = mkDefault true;
           path_smartctl = mkDefault "${pkgs.smartmontools}/sbin/smartctl";
@@ -323,7 +321,7 @@ in
 
       # nvidia gpu metrics collection
       # ------------------------------
-      (mkIf (cfg.autowire.nvidia.enable && config.hardware.nvidia.enabled) {
+      (mkIf (config.telemetry.telegraf.autowire.nvidia.enable && config.hardware.nvidia.enabled) {
         services.telegraf.extraConfig.inputs.nvidia_smi = {
           bin_path = mkDefault "${config.hardware.nvidia.package.bin}/bin/nvidia-smi";
         };
@@ -331,7 +329,7 @@ in
 
       # fail2ban jail metrics collection
       # ---------------------------------
-      (mkIf (cfg.autowire.fail2ban.enable && config.services.fail2ban.enable) {
+      (mkIf (config.telemetry.telegraf.autowire.fail2ban.enable && config.services.fail2ban.enable) {
         services.telegraf.extraConfig.inputs.fail2ban = {
           use_sudo = mkDefault true;
         };
@@ -358,14 +356,14 @@ in
 
       # chrony time sync metrics collection
       # ------------------------------------
-      (mkIf (cfg.autowire.chrony.enable && config.services.chrony.enable) {
+      (mkIf (config.telemetry.telegraf.autowire.chrony.enable && config.services.chrony.enable) {
         services.telegraf.extraConfig.inputs.chrony = { };
         users.users.telegraf.extraGroups = [ "chrony" ];
       })
 
       # ntp peer metrics collection
       # ----------------------------
-      (mkIf (cfg.autowire.ntp.enable && config.services.ntp.enable) {
+      (mkIf (config.telemetry.telegraf.autowire.ntp.enable && config.services.ntp.enable) {
         services.telegraf.extraConfig.inputs.ntpq = { };
         systemd.services.telegraf.path = [ pkgs.ntp ];
       })
@@ -383,13 +381,13 @@ in
 
       # wireless link metrics collection
       # ---------------------------------
-      (mkIf (cfg.autowire.wireless.enable && config.networking.wireless.enable) {
+      (mkIf (config.telemetry.telegraf.autowire.wireless.enable && config.networking.wireless.enable) {
         services.telegraf.extraConfig.inputs.wireless = { };
       })
 
       # prometheus server metrics collection
       # -------------------------------------
-      (mkIf (cfg.autowire.prometheus.enable && config.services.prometheus.enable) {
+      (mkIf (config.telemetry.telegraf.autowire.prometheus.enable && config.services.prometheus.enable) {
         services.telegraf.extraConfig.inputs.prometheus = {
           urls = [
             "http://${reachableHost config.services.prometheus.listenAddress}:${toString config.services.prometheus.port}/metrics"
@@ -424,7 +422,7 @@ in
 
       # libvirt metrics collection
       # ---------------------------
-      (mkIf (cfg.autowire.libvirt.enable && config.virtualisation.libvirtd.enable) {
+      (mkIf (config.telemetry.telegraf.autowire.libvirt.enable && config.virtualisation.libvirtd.enable) {
         services.telegraf.extraConfig.inputs.libvirt = {
           libvirt_uri = "qemu:///system";
         };
@@ -433,7 +431,7 @@ in
 
       # varnish metrics collection
       # ---------------------------
-      (mkIf (cfg.autowire.varnish.enable && config.services.varnish.enable) {
+      (mkIf (config.telemetry.telegraf.autowire.varnish.enable && config.services.varnish.enable) {
         services.telegraf.extraConfig.inputs.varnish = {
           binary = "${config.services.varnish.package}/bin/varnishstat";
           adm_binary = "${config.services.varnish.package}/bin/varnishadm";

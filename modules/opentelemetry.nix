@@ -6,9 +6,6 @@
 }:
 with lib;
 with types;
-let
-  cfg = config.telemetry.opentelemetry;
-in
 {
   options.telemetry.opentelemetry = {
     receiver.endpoint = mkOption {
@@ -162,9 +159,9 @@ in
     # ----------------------------
     (mkIf
       (
-        cfg.exporter.debug != null
+        config.telemetry.opentelemetry.exporter.debug != null
         && config.telemetry.enable
-        && config.telemetry.pipelines.${cfg.exporter.debug}.hasSource
+        && config.telemetry.pipelines.${config.telemetry.opentelemetry.exporter.debug}.hasSource
       )
       {
         services.opentelemetry-collector.settings = {
@@ -173,7 +170,7 @@ in
             sampling_initial = 5;
             sampling_thereafter = 200;
           };
-          service.pipelines.${cfg.exporter.debug} = {
+          service.pipelines.${config.telemetry.opentelemetry.exporter.debug} = {
             exporters = [ "debug" ];
           };
         };
@@ -182,51 +179,51 @@ in
 
     # ship to downstream instances
     # ---------------------------
-    (mkIf (cfg.exporter.endpoints != { } && config.telemetry.enable) {
+    (mkIf (config.telemetry.opentelemetry.exporter.endpoints != { } && config.telemetry.enable) {
       services.opentelemetry-collector.settings.exporters = mapAttrs' (name: endpoint: {
         name = "otlp/${name}";
         value = {
           endpoint = mkDefault endpoint;
           tls.insecure = mkDefault true;
         };
-      }) cfg.exporter.endpoints;
+      }) config.telemetry.opentelemetry.exporter.endpoints;
     })
     (mkIf
       (
-        cfg.exporter.endpoints != { }
+        config.telemetry.opentelemetry.exporter.endpoints != { }
         && config.telemetry.enable
         && config.telemetry.pipelines.logs.hasSource
       )
       {
         services.opentelemetry-collector.settings.service.pipelines.logs.exporters = map (
           name: "otlp/${name}"
-        ) (attrNames cfg.exporter.endpoints);
+        ) (attrNames config.telemetry.opentelemetry.exporter.endpoints);
       }
     )
     (mkIf
       (
-        cfg.exporter.endpoints != { }
+        config.telemetry.opentelemetry.exporter.endpoints != { }
         && config.telemetry.enable
         && config.telemetry.pipelines.metrics.hasSource
       )
       {
         services.opentelemetry-collector.settings.service.pipelines.metrics.exporters = map (
           name: "otlp/${name}"
-        ) (attrNames cfg.exporter.endpoints);
+        ) (attrNames config.telemetry.opentelemetry.exporter.endpoints);
       }
     )
 
     # receive from other instances
     # ----------------------------
-    (mkIf (cfg.receiver.endpoint != null && config.telemetry.enable) {
+    (mkIf (config.telemetry.opentelemetry.receiver.endpoint != null && config.telemetry.enable) {
       services.opentelemetry-collector.settings.receivers.otlp.protocols.grpc.endpoint =
-        cfg.receiver.endpoint;
+        config.telemetry.opentelemetry.receiver.endpoint;
     })
     (mkIf (
-      cfg.receiver.endpoint != null && config.telemetry.enable && config.telemetry.pipelines.logs.hasSink
+      config.telemetry.opentelemetry.receiver.endpoint != null && config.telemetry.enable && config.telemetry.pipelines.logs.hasSink
     ) { services.opentelemetry-collector.settings.service.pipelines.logs.receivers = [ "otlp" ]; })
     (mkIf (
-      cfg.receiver.endpoint != null
+      config.telemetry.opentelemetry.receiver.endpoint != null
       && config.telemetry.enable
       && config.telemetry.pipelines.metrics.hasSink
     ) { services.opentelemetry-collector.settings.service.pipelines.metrics.receivers = [ "otlp" ]; })

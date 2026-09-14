@@ -1,7 +1,4 @@
 { config, lib, ... }:
-let
-  cfg = config.telemetry.loki;
-in
 {
   options = {
     telemetry.loki = {
@@ -51,7 +48,7 @@ in
 
     # enable loki service
     # -------------------
-    (lib.mkIf (config.telemetry.enable && cfg.enable) {
+    (lib.mkIf (config.telemetry.enable && config.telemetry.loki.enable) {
       services.loki = {
         enable = lib.mkDefault true;
         configuration = {
@@ -63,7 +60,7 @@ in
           # is the usage fraction at which Loki rejects log pushes with a
           # misleading `Ingester is shutting down` 503.
           ingester.wal.disk_full_threshold =
-            if cfg.disk_full_threshold == null then 0 else cfg.disk_full_threshold;
+            if config.telemetry.loki.disk_full_threshold == null then 0 else config.telemetry.loki.disk_full_threshold;
 
           common = {
             ring.instance_addr = "127.0.0.1";
@@ -127,7 +124,7 @@ in
 
     # wire opentelemetry collector → loki (via OTLP HTTP, loki exporter was removed in otel 0.155+)
     # --------------------------------------------------------------
-    (lib.mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.logs.hasSource) {
+    (lib.mkIf (config.telemetry.enable && config.telemetry.loki.enable && config.telemetry.pipelines.logs.hasSource) {
       services.opentelemetry-collector.settings = {
         exporters."otlphttp/loki" = {
           endpoint = "http://127.0.0.1:${toString config.telemetry.ports.loki}/otlp";

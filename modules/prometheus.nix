@@ -1,9 +1,6 @@
 { config, lib, ... }:
 with lib;
 with types;
-let
-  cfg = config.telemetry.prometheus;
-in
 {
   options = {
     telemetry.prometheus = {
@@ -37,17 +34,17 @@ in
 
     # configure prometheus
     # --------------------
-    (mkIf (config.telemetry.enable && cfg.enable) {
+    (mkIf (config.telemetry.enable && config.telemetry.prometheus.enable) {
       services.prometheus = {
         checkConfig = mkDefault "syntax-only";
         enable = mkDefault true;
-        extraFlags = mkDefault [ "--storage.tsdb.retention.time=${cfg.retentionTime}" ];
+        extraFlags = mkDefault [ "--storage.tsdb.retention.time=${config.telemetry.prometheus.retentionTime}" ];
       };
     })
 
     # provide opentelemetry prometheus exporter
     # -----------------------------------------
-    (mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.metrics.hasSource) {
+    (mkIf (config.telemetry.enable && config.telemetry.prometheus.enable && config.telemetry.pipelines.metrics.hasSource) {
       services.opentelemetry-collector.settings = {
         service.pipelines.metrics.exporters = [ "prometheus" ];
         exporters.prometheus.endpoint = "127.0.0.1:${toString config.telemetry.ports.prometheus}";

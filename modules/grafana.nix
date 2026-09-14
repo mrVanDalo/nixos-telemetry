@@ -4,9 +4,6 @@
   pkgs,
   ...
 }:
-let
-  cfg = config.telemetry.grafana;
-in
 {
   options.telemetry.grafana = {
     enable = lib.mkOption {
@@ -66,13 +63,13 @@ in
 
     # enable grafana service
     # ----------------------
-    (lib.mkIf (config.telemetry.enable && cfg.enable) {
+    (lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable) {
       services.grafana = {
         enable = lib.mkDefault true;
         settings = {
           server = {
-            http_listen_port = cfg.http_port;
-            http_addr = cfg.http_addr;
+            http_listen_port = config.telemetry.grafana.http_port;
+            http_addr = config.telemetry.grafana.http_addr;
           };
           users.default_theme = "system";
           security = {
@@ -89,7 +86,7 @@ in
       let
         secretKeyFile = "${config.services.grafana.dataDir}/secret_key";
       in
-      lib.mkIf (config.telemetry.enable && cfg.enable && cfg.autogenerateSecretKey) {
+      lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.grafana.autogenerateSecretKey) {
         services.grafana.settings.security.secret_key = lib.mkDefault "$__file{${secretKeyFile}}";
         systemd.services.grafana.serviceConfig.ExecStartPre = lib.mkBefore [
           (lib.getExe (
@@ -125,7 +122,7 @@ in
       let
         adminPasswordFile = "${config.services.grafana.dataDir}/admin_password";
       in
-      lib.mkIf (config.telemetry.enable && cfg.enable && cfg.adminAccess == "autogenerate") {
+      lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.grafana.adminAccess == "autogenerate") {
         services.grafana.settings.security.admin_password = lib.mkDefault "$__file{${adminPasswordFile}}";
         services.grafana.settings."auth.anonymous".enabled = lib.mkDefault false;
         systemd.services.grafana.serviceConfig.ExecStartPre = lib.mkBefore [
@@ -156,7 +153,7 @@ in
 
     # admin access: anonymous viewer access
     # -------------------------------------
-    (lib.mkIf (config.telemetry.enable && cfg.enable && cfg.adminAccess == "anonymous") {
+    (lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.grafana.adminAccess == "anonymous") {
       services.grafana.settings."auth.anonymous" = {
         enabled = lib.mkDefault true;
         org_role = lib.mkDefault "Admin";
@@ -167,13 +164,13 @@ in
     # ------------------------------------------------
     # No anonymous access: real login required so the first-login
     # password change is actually triggered.
-    (lib.mkIf (config.telemetry.enable && cfg.enable && cfg.adminAccess == "firstLoginChange") {
+    (lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.grafana.adminAccess == "firstLoginChange") {
       services.grafana.settings."auth.anonymous".enabled = lib.mkDefault false;
     })
 
     # provision prometheus datasource
     # -------------------------------
-    (lib.mkIf (config.telemetry.enable && cfg.enable && config.telemetry.prometheus.enable) {
+    (lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.prometheus.enable) {
       services.grafana.provision.datasources.settings.datasources = [
         {
           name = "OTLP Prometheus";
@@ -190,7 +187,7 @@ in
 
     # provision loki datasource
     # -------------------------
-    (lib.mkIf (config.telemetry.enable && cfg.enable && config.telemetry.loki.enable) {
+    (lib.mkIf (config.telemetry.enable && config.telemetry.grafana.enable && config.telemetry.loki.enable) {
       services.grafana.provision.datasources.settings.datasources = [
         {
           name = "OTLP Loki";
