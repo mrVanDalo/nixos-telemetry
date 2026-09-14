@@ -44,6 +44,26 @@ machine.wait_until_succeeds(
 )
 print("opentelemetry scrape target is up in prometheus")
 
+# ── prometheus-exporters: node/systemd metrics reach prometheus ───────
+# The OTel collector's prometheus receiver scrapes the exporters, then
+# the collector exposes everything on its prometheus exporter endpoint
+# (job="opentelemetry" in Prometheus).  Check for node and systemd
+# metric families directly.
+machine.wait_until_succeeds(
+    """curl -sf -G http://127.0.0.1:9090/api/v1/query \
+        --data-urlencode 'query=count(node_cpu_seconds_total)' \
+        | grep -qv '"result":\\[\\]'""",
+    timeout=120,
+)
+print("node exporter metrics collected by prometheus")
+machine.wait_until_succeeds(
+    """curl -sf -G http://127.0.0.1:9090/api/v1/query \
+        --data-urlencode 'query=count(systemd_n_units)' \
+        | grep -qv '"result":\\[\\]'""",
+    timeout=120,
+)
+print("systemd exporter metrics collected by prometheus")
+
 # ── metrics flow end-to-end ───────────────────────────────────────────
 # telegraf and netdata feed the otel collector; the metricstransform
 # processor tags every series with host_name="test-host", so any collected

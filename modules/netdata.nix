@@ -50,9 +50,9 @@ in
     (mkIf (config.telemetry.enable && cfg.enable && config.telemetry.pipelines.metrics.hasSink) {
       services.opentelemetry-collector.settings = {
 
-        service.pipelines.metrics.receivers = [ "prometheus" ];
+        service.pipelines.metrics.receivers = [ "prometheus/netdata" ];
 
-        receivers.prometheus.config.scrape_configs = [
+        receivers."prometheus/netdata".config.scrape_configs = [
           {
             job_name = "netdata";
             scrape_interval = "10s";

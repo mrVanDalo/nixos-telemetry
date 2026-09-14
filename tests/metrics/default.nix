@@ -23,6 +23,7 @@
               telegraf.enable = true;
               netdata.enable = true;
               prometheus.enable = true;
+              "prometheus-exporters".enable = true;
               telegraf.inputs.procstat.pattern = ".";
             };
           };

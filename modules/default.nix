@@ -66,6 +66,7 @@ with types;
     ./loki.nix
     ./telegraf.nix
     ./prometheus.nix
+    ./prometheus-exporters.nix
     ./netdata.nix
     ./ports.nix
     ./grafana.nix
@@ -76,6 +77,7 @@ with types;
     telemetry.pipelines.metrics.hasSource =
       config.telemetry.telegraf.enable
       || config.telemetry.netdata.enable
+      || config.telemetry."prometheus-exporters".enable
       || (config.telemetry.opentelemetry.receiver.endpoint != null);
 
     telemetry.pipelines.metrics.hasSink =
