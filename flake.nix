@@ -126,18 +126,20 @@
         # agnostic ones like nixosModule and system-enumerating ones, although
         # those are more easily expressed in perSystem.
         nixosModules.telemetry = ./modules;
-        nixosModules.container-telemetry =
+        nixosModules.telemetry-container-private-network =
           { lib, ... }:
           {
             imports = [ self.nixosModules.telemetry ];
             config = {
               telemetry.enable = lib.mkDefault true; # import this module should be convenient
-              telemetry.alloy.enable = lib.mkDefault true; # collect container journal logs
               services.journald.settings.Journal.SystemMaxUse = "1G"; # no need for storing a lot of logs.
+              # container identity: alloy stamps container_name/is_container
+              # onto journal logs, telegraf onto metrics
+              telemetry.isContainer = lib.mkDefault true;
             };
           };
 
-        nixosModules.container-telemetry-shared-net =
+        nixosModules.telemetry-container-shared-network =
           { lib, ... }:
           {
             imports = [ self.nixosModules.telemetry ];
@@ -146,7 +148,16 @@
               # loopback output without a local sink; alloy's URL is hardcoded
               # to loopback already. Agents push to the host collector through
               # the shared loopback.
-              telemetry.container.sharedNetwork = lib.mkDefault true;
+              telemetry.isSharedNetworkContainer = lib.mkDefault true;
+              # container identity: alloy stamps container_name/is_container
+              # onto journal logs, telegraf onto metrics
+              telemetry.isContainer = lib.mkDefault true;
+              # off in a shared-net container: netdata cannot push its metrics
+              # to the host collector (its prometheus endpoint is pull-only,
+              # a remote host cannot scrape into the container's netns), and
+              # it would bind-clash on :19999 anyway. Telegraf covers metrics.
+              # Re-enabling requires lib.mkOverride 49 — a deliberate act.
+              services.netdata.enable = lib.mkForce false;
               # offset the container's alloy UI so it cannot clash with a host
               # alloy on :12345
               services.alloy.extraFlags = lib.mkDefault [

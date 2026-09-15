@@ -4,54 +4,53 @@
   ...
 }:
 {
-  options.telemetry = {
-    autowire.containers.sharedNetwork = lib.mkOption {
-      type = lib.types.bool;
-      default = config.telemetry.autowire.enable;
-      description = ''
-        Host-side switch controlling whether shared-network containers
-        (`privateNetwork = false`) are taken into account for telemetry
-        auto-wiring. When enabled together with at least one shared-network
-        container, the host opens its agent-facing collector receivers
-        (loki, influxdb) so container agents push directly over the shared
-        loopback. Defaults through the master switch
-        `telemetry.autowire.enable`.
-      '';
-    };
+  options.telemetry.isSharedNetworkContainer = lib.mkOption {
+    type = lib.types.bool;
+    default = false;
+    description = ''
+      Set inside a container's evaluation to declare "I am a shared-network
+      container whose agents push to the host collector over the shared
+      loopback". The `telemetry-container-shared-network` module sets this to
+      true by default. A container cannot derive its network mode from its
+      own config (`privateNetwork` lives only in the host's
+      `containers.<name>` submodule), so the imported module is the
+      declaration point.
+    '';
+  };
 
-    container.sharedNetwork = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = ''
-        Set inside a container's evaluation to declare "I am a shared-network
-        container whose agents push to the host collector over the shared
-        loopback". The `container-telemetry-shared-net` module sets this to
-        true by default. A container cannot derive its network mode from its
-        own config (`privateNetwork` lives only in the host's
-        `containers.<name>` submodule), so the imported module is the
-        declaration point.
-      '';
-    };
+  options.telemetry.isContainer = lib.mkOption {
+    type = lib.types.bool;
+    default = false;
+    description = ''
+      Set inside a container's evaluation to declare "I am a container".
+      When true, all agents stamp container identity onto their telemetry:
+      alloy adds the `container_name` / `is_container` labels to journal
+      logs, telegraf adds them to `global_tags`, and netdata gets them as
+      host labels plus receiver-side scrape labels on every metric
+      (container_name defaults to the container's hostname).
+    '';
+  };
 
-    pipelines.container.hasSharedNetworkContainer = lib.mkOption {
-      type = lib.types.bool;
-      readOnly = true;
-      internal = true;
-      description = ''
-        Internal: the host has auto-wire enabled and at least one
-        shared-network container, so agent-facing receivers must open.
-      '';
-    };
+  options.telemetry.pipelines.container.hasSharedNetworkContainer = lib.mkOption {
+    type = lib.types.bool;
+    readOnly = true;
+    internal = true;
+    description = ''
+      True if this is a NixOS system which contains at least one nixos-container
+      with privateNetwork set to false.
+      In this case we expect the nixos-container to send its traffic to the
+      OpenTelemetry collector on the host system, instead of spawning one itself.
+      This is mainly to prevent port clashes.
+    '';
   };
 
   config = {
     # Host-side detection: any container sharing the host network namespace.
     # `config.containers` is empty inside a container evaluation (nspawn
-    # containers have no children), so the flag is naturally false there —
-    # host-side auto-wire is host-only.
-    telemetry.pipelines.container.hasSharedNetworkContainer =
-      config.telemetry.autowire.containers.sharedNetwork
-      && lib.any (container: !container.privateNetwork) (lib.attrValues config.containers);
+    # containers have no children), so the flag is naturally false there.
+    telemetry.pipelines.container.hasSharedNetworkContainer = lib.any (
+      container: !container.privateNetwork
+    ) (lib.attrValues config.containers);
 
     warnings =
       lib.mkIf

@@ -85,6 +85,16 @@
             source_labels = ["__journal__hostname"]
             target_label  = "host_name"
           }
+          ${lib.optionalString config.telemetry.isContainer ''
+            rule {
+              source_labels = ["__journal__hostname"]
+              target_label  = "container_name"
+            }
+            rule {
+              target_label  = "is_container"
+              replacement   = "true"
+            }
+          ''}
           rule {
             source_labels = ["__journal__transport"]
             target_label  = "transport"

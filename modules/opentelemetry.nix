@@ -94,6 +94,27 @@ with types;
             ];
           };
 
+          # Shared-network containers: their alloy promotes the journal's
+          # hostname to the `host_name` log attribute, but the loki receiver
+          # delivers labels as log attributes and the resourcedetection
+          # detector stamps the host's own hostname onto the resource.
+          # Copy the per-record `host_name` onto the resource as `host.name`
+          # so container identity survives (records without `host_name` —
+          # e.g. OTLP-received logs that already carry the right resource —
+          # are untouched). loki.nix promotes resource `host.name` to the
+          # `host_name` index label, so this is what makes container logs
+          # queryable by their own hostname.
+          "transform/host_name" = {
+            log_statements = [
+              {
+                context = "log";
+                statements = [
+                  ''set(resource.attributes["host.name"], attributes["host_name"]) where attributes["host_name"] != nil''
+                ];
+              }
+            ];
+          };
+
           # The loki receiver puts every stream of a push request under a single
           # ResourceLogs, so a resource attribute can only describe one service.
           # groupbyattrs splits the records back out: it moves the `service.name`
@@ -147,6 +168,11 @@ with types;
       {
         services.opentelemetry-collector.settings = {
           service.pipelines.logs.processors = [
+            # host_name first: sets resource host.name from the per-record
+            # attribute; the detector below runs with override=false so it
+            # won't overwrite it (records without host_name still get the
+            # host's own hostname from the detector)
+            "transform/host_name"
             "resourcedetection/system"
             "transform/service_name"
             "groupbyattrs/service"

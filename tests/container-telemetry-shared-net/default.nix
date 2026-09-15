@@ -1,5 +1,5 @@
 # Goal:
-# verify `nixosModules.container-telemetry-shared-net` inside a NixOS
+# verify `nixosModules.telemetry-container-shared-network` inside a NixOS
 # declarative (systemd-nspawn) container that shares the host's network
 # namespace (privateNetwork = false). The container's agents (alloy,
 # telegraf) push directly to the host collector over the shared loopback —
@@ -12,8 +12,8 @@
   perSystem =
     { pkgs, ... }:
     {
-      checks.container-telemetry-hostnet = pkgs.testers.runNixOSTest {
-        name = "container-telemetry-hostnet";
+      checks.container-telemetry-shared-net = pkgs.testers.runNixOSTest {
+        name = "container-telemetry-shared-net";
 
         # host: sinks only — no receiver.endpoint, no agents. Auto-wire
         # opens the agent-facing receivers from the container topology.
@@ -27,6 +27,9 @@
             enable = true;
             prometheus.enable = true;
             loki.enable = true;
+            # debug exporter writes each received log record to the
+            # collector's journal — the test greps it for the marker
+            opentelemetry.exporter.debug = "logs";
           };
 
           # the container under test: imports ONLY the shared-net module —
@@ -38,7 +41,7 @@
             autoStart = true;
             privateNetwork = false;
             config = {
-              imports = [ self.nixosModules.container-telemetry-shared-net ];
+              imports = [ self.nixosModules.telemetry-container-shared-network ];
               system.stateVersion = "25.05";
               nix.enable = false;
 

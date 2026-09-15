@@ -110,6 +110,23 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
 
+## telemetry.isSharedNetworkContainer
+
+Set inside a container&#39;s evaluation to declare &#34;I am a shared-network
+container whose agents push to the host collector over the shared loopback&#34;.
+The `telemetry-container-shared-network` module sets this to true by default. A
+container cannot derive its network mode from its own config (`privateNetwork`
+lives only in the host&#39;s `containers.&lt;name&gt;` submodule), so the
+imported module is the declaration point.
+
+_Type:_ `boolean`
+
+_Default:_ `false`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/containers.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/containers.nix)
+
 ## telemetry.loki.disk_full_threshold
 
 Fraction of disk usage (0.0–1.0) at which Loki&#39;s ingester WAL starts

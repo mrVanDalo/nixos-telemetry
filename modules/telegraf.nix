@@ -107,8 +107,8 @@ in
       {
 
         services.opentelemetry-collector.settings = {
-          receivers.influxdb.endpoint = "127.0.0.1:${toString config.telemetry.ports.telegraf}";
-          service.pipelines.metrics.receivers = [ "influxdb" ];
+          receivers."influxdb/telegraf".endpoint = "127.0.0.1:${toString config.telemetry.ports.telegraf}";
+          service.pipelines.metrics.receivers = [ "influxdb/telegraf" ];
         };
 
       }
@@ -120,9 +120,9 @@ in
       lib.mkMerge [
 
         # output: push to the local collector on loopback; the shared-net
-        # container module flips telemetry.container.sharedNetwork so this
-        # fires without a local sink
-        (mkIf (config.telemetry.pipelines.metrics.hasSink || config.telemetry.container.sharedNetwork) {
+        # container module flips telemetry.isSharedNetworkContainer
+        # so this fires without a local sink
+        (mkIf (config.telemetry.pipelines.metrics.hasSink || config.telemetry.isSharedNetworkContainer) {
           services.telegraf.extraConfig.outputs.influxdb_v2.urls = [
             "http://127.0.0.1:${toString config.telemetry.ports.telegraf}"
           ];
@@ -137,14 +137,22 @@ in
           services.telegraf = {
             enable = mkDefault true;
             extraConfig = {
-              global_tags = {
-                instance_name = config.networking.hostName; # this will end up as `instance` label  in  prometheus
-                # load-bearing for shared-net containers: their collector is
-                # disabled, so the host collector's add-if-missing stamp would
-                # relabel every container metric with the host's hostname.
-                # Stamped here from the container's own hostname instead.
-                host_name = config.networking.hostName;
-              };
+              global_tags = lib.mkMerge [
+                {
+                  instance_name = config.networking.hostName; # this will end up as `instance` label  in  prometheus
+                  # load-bearing for shared-net containers: their collector is
+                  # disabled, so the host collector's add-if-missing stamp would
+                  # relabel every container metric with the host's hostname.
+                  # Stamped here from the container's own hostname instead.
+                  host_name = config.networking.hostName;
+                }
+                # container identity, only when this system declared itself
+                # a container (telemetry.isContainer)
+                (lib.mkIf config.telemetry.isContainer {
+                  container_name = config.networking.hostName;
+                  is_container = "true";
+                })
+              ];
 
               # https://github.com/influxdata/telegraf/tree/master/plugins/inputs < all them plugins
               inputs = {
