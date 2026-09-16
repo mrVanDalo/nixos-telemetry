@@ -99,7 +99,7 @@ in
     (mkIf
       (
         config.telemetry.enable
-        && config.telemetry.pipelines.metrics.hasSink
+        && config.telemetry.pipelines.metrics.hasExporters
         && (
           config.telemetry.telegraf.enable || config.telemetry.pipelines.container.hasSharedNetworkContainer
         )
@@ -122,11 +122,13 @@ in
         # output: push to the local collector on loopback; the shared-net
         # container module flips telemetry.isSharedNetworkContainer
         # so this fires without a local sink
-        (mkIf (config.telemetry.pipelines.metrics.hasSink || config.telemetry.isSharedNetworkContainer) {
-          services.telegraf.extraConfig.outputs.influxdb_v2.urls = [
-            "http://127.0.0.1:${toString config.telemetry.ports.telegraf}"
-          ];
-        })
+        (mkIf (config.telemetry.pipelines.metrics.hasExporters || config.telemetry.isSharedNetworkContainer)
+          {
+            services.telegraf.extraConfig.outputs.influxdb_v2.urls = [
+              "http://127.0.0.1:${toString config.telemetry.ports.telegraf}"
+            ];
+          }
+        )
 
         # configure telegraf
         # -----------------

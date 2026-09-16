@@ -13,6 +13,17 @@
         system.stateVersion = "25.05";
         telemetry.enable = true;
       };
+      # machineMetrics: telegraf source only, no sink ⇒ metrics fragment only,
+      # no complete pipeline ⇒ collector disabled.
+      nodes.machineMetrics = {
+        imports = [ self.nixosModules.telemetry ];
+        networking.hostName = "machine-metrics";
+        system.stateVersion = "25.05";
+        telemetry = {
+          enable = true;
+          telegraf.enable = true;
+        };
+      };
       # pipeline: alloy source + debug sink ⇒ complete logs pipeline ⇒ collector enabled.
       nodes.pipeline = {
         imports = [ self.nixosModules.telemetry ];

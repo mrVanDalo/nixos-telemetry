@@ -71,7 +71,7 @@ with types;
         && config.telemetry.isContainer
         && !config.telemetry.isSharedNetworkContainer
         && config.telemetry.netdata.enable
-        && config.telemetry.pipelines.metrics.hasSink
+        && config.telemetry.pipelines.metrics.hasExporters
       )
       {
         # container identity as netdata host labels: visible on the dashboard,
@@ -104,7 +104,7 @@ with types;
       (
         config.telemetry.enable
         && config.telemetry.netdata.enable
-        && config.telemetry.pipelines.metrics.hasSink
+        && config.telemetry.pipelines.metrics.hasExporters
       )
       {
         services.opentelemetry-collector.settings = {

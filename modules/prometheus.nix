@@ -50,7 +50,7 @@ with types;
       (
         config.telemetry.enable
         && config.telemetry.prometheus.enable
-        && config.telemetry.pipelines.metrics.hasSource
+        && config.telemetry.pipelines.metrics.hasReceivers
       )
       {
         services.opentelemetry-collector.settings = {

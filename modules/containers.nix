@@ -56,8 +56,8 @@
       lib.mkIf
         (
           config.telemetry.pipelines.container.hasSharedNetworkContainer
-          && !config.telemetry.pipelines.logs.hasSink
-          && !config.telemetry.pipelines.metrics.hasSink
+          && !config.telemetry.pipelines.logs.hasExporters
+          && !config.telemetry.pipelines.metrics.hasExporters
         )
         [
           ''

@@ -43,4 +43,19 @@ sink.wait_until_succeeds(
     timeout=180,
 )
 print("Metrics forwarded source -> sink verified (host_name=source)")
+
+# ── logs: source -> sink -> loki ──────────────────────────────────
+# The sink's otlphttp/loki collector exporter pushes logs to the local
+# loki. resourcedetection sets host.name=source; loki promotes it to
+# host_name. This asserts the otlphttp/loki path works remotely.
+sink.wait_for_open_port(3100)
+sink.wait_until_succeeds(
+    """curl -sf -G http://127.0.0.1:3100/loki/api/v1/query_range \
+        --data-urlencode 'query={host_name="source"} |= "hello-from-forward-central-test"' \
+        --data-urlencode 'start='$(($(date +%s) - 3600))'000000000' \
+        --data-urlencode 'end='$(($(date +%s) + 300))'000000000' \
+        | grep -q 'hello-from-forward-central-test'""",
+    timeout=90,
+)
+print("Logs forwarded source -> sink -> loki verified (host_name=source)")
 print("forward-central test passed!")

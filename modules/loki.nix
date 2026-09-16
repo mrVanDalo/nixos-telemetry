@@ -129,7 +129,9 @@
     # --------------------------------------------------------------
     (lib.mkIf
       (
-        config.telemetry.enable && config.telemetry.loki.enable && config.telemetry.pipelines.logs.hasSource
+        config.telemetry.enable
+        && config.telemetry.loki.enable
+        && config.telemetry.pipelines.logs.hasReceivers
       )
       {
         services.opentelemetry-collector.settings = {

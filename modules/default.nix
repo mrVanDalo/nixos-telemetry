@@ -25,32 +25,20 @@ with types;
       '';
     };
 
-    # internal: whether the metrics/logs pipeline will have both a source and a sink.
+    # internal: whether the metrics/logs pipeline will have both receivers and exporters.
     # pipeline fragments (receivers/exporters/processors) are only created when both exist,
     # so the OTel collector never sees a pipeline with missing receivers or exporters.
-    pipelines.metrics.hasSource = mkOption {
-      type = bool;
-      readOnly = true;
-      internal = true;
-      description = "Internal: at least one metrics source (receiver) is configured.";
+    pipelines.metrics.hasReceivers = mkOption {
+      description = "Internal: at least one metrics receiver is configured.";
     };
-    pipelines.metrics.hasSink = mkOption {
-      type = bool;
-      readOnly = true;
-      internal = true;
-      description = "Internal: at least one metrics sink (exporter) is configured.";
+    pipelines.metrics.hasExporters = mkOption {
+      description = "Internal: at least one metrics exporter is configured.";
     };
-    pipelines.logs.hasSource = mkOption {
-      type = bool;
-      readOnly = true;
-      internal = true;
-      description = "Internal: at least one logs source (receiver) is configured.";
+    pipelines.logs.hasReceivers = mkOption {
+      description = "Internal: at least one logs receiver is configured.";
     };
-    pipelines.logs.hasSink = mkOption {
-      type = bool;
-      readOnly = true;
-      internal = true;
-      description = "Internal: at least one logs sink (exporter) is configured.";
+    pipelines.logs.hasExporters = mkOption {
+      description = "Internal: at least one logs exporter is configured.";
     };
     pipelines.anyComplete = mkOption {
       type = bool;
@@ -74,27 +62,27 @@ with types;
   ];
 
   config = {
-    telemetry.pipelines.metrics.hasSource =
+    telemetry.pipelines.metrics.hasReceivers =
       config.telemetry.telegraf.enable
       || config.telemetry.netdata.enable
       || (config.telemetry.opentelemetry.receiver.endpoint != null)
       || config.telemetry.pipelines.container.hasSharedNetworkContainer;
-    telemetry.pipelines.metrics.hasSink =
+    telemetry.pipelines.metrics.hasExporters =
       config.telemetry.prometheus.enable
       || (config.telemetry.opentelemetry.exporter.endpoints != { })
       || (config.telemetry.opentelemetry.exporter.debug == "metrics");
 
-    telemetry.pipelines.logs.hasSource =
+    telemetry.pipelines.logs.hasReceivers =
       config.telemetry.alloy.enable
       || (config.telemetry.opentelemetry.receiver.endpoint != null)
       || config.telemetry.pipelines.container.hasSharedNetworkContainer;
-    telemetry.pipelines.logs.hasSink =
+    telemetry.pipelines.logs.hasExporters =
       config.telemetry.loki.enable
       || (config.telemetry.opentelemetry.exporter.endpoints != { })
       || (config.telemetry.opentelemetry.exporter.debug == "logs");
 
     telemetry.pipelines.anyComplete =
-      (config.telemetry.pipelines.metrics.hasSource && config.telemetry.pipelines.metrics.hasSink)
-      || (config.telemetry.pipelines.logs.hasSource && config.telemetry.pipelines.logs.hasSink);
+      (config.telemetry.pipelines.metrics.hasReceivers && config.telemetry.pipelines.metrics.hasExporters)
+      || (config.telemetry.pipelines.logs.hasReceivers && config.telemetry.pipelines.logs.hasExporters);
   };
 }

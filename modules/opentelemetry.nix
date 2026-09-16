@@ -146,8 +146,8 @@ with types;
     (mkIf
       (
         config.telemetry.enable
-        && config.telemetry.pipelines.metrics.hasSource
-        && config.telemetry.pipelines.metrics.hasSink
+        && config.telemetry.pipelines.metrics.hasReceivers
+        && config.telemetry.pipelines.metrics.hasExporters
       )
       {
         services.opentelemetry-collector.settings = {
@@ -162,8 +162,8 @@ with types;
     (mkIf
       (
         config.telemetry.enable
-        && config.telemetry.pipelines.logs.hasSource
-        && config.telemetry.pipelines.logs.hasSink
+        && config.telemetry.pipelines.logs.hasReceivers
+        && config.telemetry.pipelines.logs.hasExporters
       )
       {
         services.opentelemetry-collector.settings = {
@@ -187,7 +187,7 @@ with types;
       (
         config.telemetry.opentelemetry.exporter.debug != null
         && config.telemetry.enable
-        && config.telemetry.pipelines.${config.telemetry.opentelemetry.exporter.debug}.hasSource
+        && config.telemetry.pipelines.${config.telemetry.opentelemetry.exporter.debug}.hasReceivers
       )
       {
         services.opentelemetry-collector.settings = {
@@ -218,7 +218,7 @@ with types;
       (
         config.telemetry.opentelemetry.exporter.endpoints != { }
         && config.telemetry.enable
-        && config.telemetry.pipelines.logs.hasSource
+        && config.telemetry.pipelines.logs.hasReceivers
       )
       {
         services.opentelemetry-collector.settings.service.pipelines.logs.exporters = map (
@@ -230,7 +230,7 @@ with types;
       (
         config.telemetry.opentelemetry.exporter.endpoints != { }
         && config.telemetry.enable
-        && config.telemetry.pipelines.metrics.hasSource
+        && config.telemetry.pipelines.metrics.hasReceivers
       )
       {
         services.opentelemetry-collector.settings.service.pipelines.metrics.exporters = map (
@@ -248,12 +248,12 @@ with types;
     (mkIf (
       config.telemetry.opentelemetry.receiver.endpoint != null
       && config.telemetry.enable
-      && config.telemetry.pipelines.logs.hasSink
+      && config.telemetry.pipelines.logs.hasExporters
     ) { services.opentelemetry-collector.settings.service.pipelines.logs.receivers = [ "otlp" ]; })
     (mkIf (
       config.telemetry.opentelemetry.receiver.endpoint != null
       && config.telemetry.enable
-      && config.telemetry.pipelines.metrics.hasSink
+      && config.telemetry.pipelines.metrics.hasExporters
     ) { services.opentelemetry-collector.settings.service.pipelines.metrics.receivers = [ "otlp" ]; })
 
     # disable collector internal metrics

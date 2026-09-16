@@ -28,7 +28,7 @@
     (lib.mkIf
       (
         config.telemetry.enable
-        && config.telemetry.pipelines.logs.hasSink
+        && config.telemetry.pipelines.logs.hasExporters
         && (config.telemetry.alloy.enable || config.telemetry.pipelines.container.hasSharedNetworkContainer)
       )
       {

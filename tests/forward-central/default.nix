@@ -28,7 +28,7 @@
             };
           };
 
-        # sink: central server, runs prometheus + debug exporter, no local source
+        # sink: central server, runs prometheus + loki + debug exporter, no local source
         nodes.sink =
           { ... }:
           {
@@ -41,14 +41,17 @@
               enable = true;
               opentelemetry = {
                 receiver.endpoint = "0.0.0.0:4317";
-                # `exporter.debug = "logs"` makes logs.hasSink true so the OTLP
+                # `exporter.debug = "logs"` makes logs.hasExporters true so the OTLP
                 # receiver is wired into the logs pipeline.
                 exporter.debug = "logs";
               };
-              # prometheus is the metrics sink: it makes metrics.hasSink true so
+              # prometheus is the metrics sink: it makes metrics.hasExporters true so
               # the OTLP receiver is wired into the metrics pipeline, then scrapes
               # the collector's prometheus exporter.
               prometheus.enable = true;
+              # loki receives logs via the otlphttp/loki exporter, gated on
+              # logs.hasExporters (debug exporter) && logs.hasReceivers (receiver.endpoint).
+              loki.enable = true;
             };
           };
 
