@@ -41,14 +41,17 @@ for line in journal.splitlines():
 
 assert attrs, "test log message not found in collector journal"
 
-# verify expected labels are present
+# verify expected labels are present. host_name is a per-record attribute
+# set by alloy's journal relabel rule (this machine is not a container);
+# the resource-level host.name the resourcedetection processor stamps
+# prints on the ResourceLog line, not this record line.
 for label in [
     "unit",
-    "instance_name",
     "transport",
     "boot_id",
     "priority",
     "priority_label",
+    "host_name",
 ]:
     assert label in attrs, f"missing label '{label}' in {attrs.keys()}"
 
@@ -65,11 +68,6 @@ valid_priorities = [
 ]
 assert attrs["priority_label"] in valid_priorities, (
     f"unexpected priority_label: {attrs['priority_label']}"
-)
-
-# verify hostname
-assert attrs["instance_name"] == "test-host", (
-    f"instance_name mismatch: {attrs['instance_name']}"
 )
 
 print(f"Verified log record attributes: {attrs}")

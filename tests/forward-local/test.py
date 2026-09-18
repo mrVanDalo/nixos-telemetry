@@ -30,7 +30,7 @@ print("Remote log forwarding verified: source -> target (host.name=source)")
 
 # ── metrics: source -> target (remote forwarding) ─────────────────────
 # `target` has no local metric source, so every metric reaching it must
-# have arrived over OTLP from `source`. The metricstransform processor tags
+# have arrived over OTLP from `source`. The metricstransform/host_name processor tags
 # metrics host_name="source"; prometheus-internal metrics (e.g. `up`) lack it.
 target.wait_for_open_port(9090)
 target.wait_until_succeeds(
@@ -57,7 +57,7 @@ print("Local loki verified: collector -> loki (host_name=source)")
 
 # ── local prometheus on source sees the metrics ───────────────────────
 # The collector's prometheus exporter (port 8090) is scraped by the local
-# prometheus. The metricstransform processor tags host_name="source".
+# prometheus. The metricstransform/host_name processor tags host_name="source".
 source.wait_for_open_port(8090)
 source.wait_for_open_port(9090)
 source.wait_until_succeeds(

@@ -64,6 +64,10 @@ with types;
       ];
     })
 
+    # processors
+    # -----------
+
+    # metrics
     # add default tags processors
     # ---------------------------
     (mkIf (config.telemetry.enable && config.telemetry.pipelines.anyComplete) {
@@ -72,8 +76,11 @@ with types;
 
         processors = {
 
-          # todo  : add a tag for nixos-container name
-
+          # Fills unset resource `host.name` with this system's hostname
+          # (`override = false`: existing values — e.g. a container's own
+          # resource attributes forwarded over OTLP — are kept). Container
+          # logs/metrics that arrive without a hostname therefore get
+          # `networking.hostName` of the receiving host stamped on.
           # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourcedetectionprocessor/README.md
           "resourcedetection/system" = {
             detectors = [ "system" ];
@@ -87,40 +94,33 @@ with types;
           # OTLP index labels). This lets logs be filtered by service_name
           # instead of all collapsing to Loki's "unknown_service" fallback.
           # See: https://grafana.com/docs/loki/latest/get-started/labels/
-          "transform/service_name" = {
-            log_statements = [
-              {
-                context = "log";
-                statements = [
-                  ''set(attributes["service.name"], attributes["unit"]) where attributes["unit"] != nil''
-                  # strip common systemd unit suffixes for a clean service name
-                  # (grafana.service -> grafana, session.scope -> session)
-                  ''replace_pattern(attributes["service.name"], "\\.(service|socket|timer|target|scope|mount|swap|slice|automount|device)$", "") where attributes["service.name"] != nil''
-                ];
-              }
-            ];
-          };
+          "transform/service_name".log_statements = [
+            {
+              context = "log";
+              statements = [
+                ''set(attributes["service.name"], attributes["unit"]) where attributes["unit"] != nil''
+                # strip common systemd unit suffixes for a clean service name
+                # (grafana.service -> grafana, session.scope -> session)
+                ''replace_pattern(attributes["service.name"], "\\.(service|socket|timer|target|scope|mount|swap|slice|automount|device)$", "") where attributes["service.name"] != nil''
+              ];
+            }
+          ];
 
-          # Shared-network containers: their alloy promotes the journal's
-          # hostname to the `host_name` log attribute, but the loki receiver
-          # delivers labels as log attributes and the resourcedetection
-          # detector stamps the host's own hostname onto the resource.
-          # Copy the per-record `host_name` onto the resource as `host.name`
-          # so container identity survives (records without `host_name` —
-          # e.g. OTLP-received logs that already carry the right resource —
-          # are untouched). loki.nix promotes resource `host.name` to the
-          # `host_name` index label, so this is what makes container logs
-          # queryable by their own hostname.
-          "transform/host_name" = {
-            log_statements = [
-              {
-                context = "log";
-                statements = [
-                  ''set(resource.attributes["host.name"], attributes["host_name"]) where attributes["host_name"] != nil''
-                ];
-              }
-            ];
-          };
+          # Hosts only (wired below): alloy promotes the journal's hostname
+          # to the `host_name` log attribute, but the loki receiver delivers
+          # labels as log attributes. Copy the per-record `host_name` onto
+          # the resource as `host.name` (records without `host_name` — e.g.
+          # OTLP-received logs that already carry the right resource — are
+          # untouched). loki.nix promotes resource `host.name` to the
+          # `host_name` index label.
+          "transform/host_name".log_statements = [
+            {
+              context = "log";
+              statements = [
+                ''set(resource.attributes["host.name"], attributes["host_name"]) where attributes["host_name"] != nil''
+              ];
+            }
+          ];
 
           # The loki receiver puts every stream of a push request under a single
           # ResourceLogs, so a resource attribute can only describe one service.
@@ -128,11 +128,12 @@ with types;
           # log attribute onto the Resource (one ResourceLogs per distinct
           # service) so each service gets its own stream in Loki.
           # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/groupbyattrsprocessor
-          "groupbyattrs/service" = {
-            keys = [ "service.name" ];
-          };
+          "groupbyattrs/service".keys = [ "service.name" ];
 
-          metricstransform.transforms = [
+          # add-if-missing: stamp this host's hostname onto metric series
+          # that don't carry one (container telemetry arrives with the
+          # container's own host_name via telegraf global_tags)
+          "metricstransform/host_name".transforms = [
             {
               include = ".*";
               match_type = "regexp";
@@ -158,8 +159,12 @@ with types;
       )
       {
         services.opentelemetry-collector.settings = {
-          service.pipelines.metrics.processors = [
-            "metricstransform"
+          # both processors stamp this system's hostname onto metrics —
+          # hosts only; a container's collector must not relabel container
+          # telemetry with its own name (container identity arrives via
+          # telegraf's global_tags instead).
+          service.pipelines.metrics.processors = lib.optionals (!config.telemetry.isContainer) [
+            "metricstransform/host_name"
             "resourcedetection/system"
           ];
         };
@@ -174,16 +179,23 @@ with types;
       )
       {
         services.opentelemetry-collector.settings = {
-          service.pipelines.logs.processors = [
-            # host_name first: sets resource host.name from the per-record
-            # attribute; the detector below runs with override=false so it
-            # won't overwrite it (records without host_name still get the
-            # host's own hostname from the detector)
-            "transform/host_name"
-            "resourcedetection/system"
-            "transform/service_name"
-            "groupbyattrs/service"
-          ];
+          # hostname stamping is host-only and add-if-missing:
+          # transform/host_name copies the per-record `host_name` attribute
+          # (set by alloy on hosts); resourcedetection fills resource
+          # `host.name` from networking.hostName when still unset
+          # (override=false) — e.g. container logs, which carry only
+          # container_name. A container's own collector must not stamp
+          # anything. service_name grouping stays on everywhere — Loki
+          # needs it for streams.
+          service.pipelines.logs.processors =
+            (lib.optionals (!config.telemetry.isContainer) [
+              "transform/host_name"
+              "resourcedetection/system"
+            ])
+            ++ [
+              "transform/service_name"
+              "groupbyattrs/service"
+            ];
         };
       }
     )

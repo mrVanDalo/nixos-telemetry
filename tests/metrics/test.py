@@ -45,7 +45,7 @@ machine.wait_until_succeeds(
 print("opentelemetry scrape target is up in prometheus")
 
 # ── metrics flow end-to-end ───────────────────────────────────────────
-# telegraf and netdata feed the otel collector; the metricstransform
+# telegraf and netdata feed the otel collector; the metricstransform/host_name
 # processor tags every series with host_name="test-host", so any collected
 # metric reaching prometheus carries that label.
 machine.wait_until_succeeds(

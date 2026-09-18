@@ -34,7 +34,7 @@ print("Log forwarded source -> proxy -> sink verified (host.name=source)")
 # ── metrics: source -> proxy -> sink ──────────────────────────────────
 # only `source` has a metric source (telegraf); proxy is a pure relay and
 # sink has none, so any metric on sink must have traversed the full chain.
-# The metricstransform processor on `source` tags metrics host_name="source";
+# The metricstransform/host_name processor on `source` tags metrics host_name="source";
 # that label survives both hops (add_label does not overwrite an existing
 # label), so we can confirm the source directly. prometheus-internal metrics
 # (e.g. `up`) lack the label.

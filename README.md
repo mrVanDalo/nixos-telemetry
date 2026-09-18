@@ -236,9 +236,9 @@ from the example above.
 ## Containers
 
 Containers are labeled `is_container = true` and `container_name = <name>` in
-their telemetry. We provide prepared NixOS modules to handle both network modes
-(`privateNetwork` true or false) — import the matching one into the container's
-config.
+their telemetry (see [labels](#labels)). We provide prepared NixOS modules to
+handle both network modes (`privateNetwork` true or false) — import the matching
+one into the container's config.
 
 ### Private-network containers
 
@@ -334,11 +334,16 @@ containers.mycontainer = {
 
 ## Labels
 
-Here are labels, which we try to always set.
+Here are labels, which we try to always set. The _container_name_ and
+_is_container_ labels only apply to [containers](#containers).
 
-_instance_name:_ Either the host name or the container name. Set on metrics (via
-telegraf `global_tags`) and on logs (via alloy journal relabel).
+_host_name:_ The host name of the machine (usually `networking.hostName`).
+Stamped only by the machine's own agents when it is not a container; a receiving
+host collector fills an unset `host.name` with its own hostname. Containers
+carry their identity through _container_name_ / _is_container_.
 
-_host_name:_ The host name, also for containers. Set on metrics (via the
-OpenTelemetry collector `metricstransform` processor) and on logs (via alloy
-journal relabel).
+_container_name:_ The container name, only set for NixOS containers (set
+together with _is_container_).
+
+_is_container:_ Set to `true` when `telemetry.isContainer` is `true`, which
+should only be the case in NixOS containers.

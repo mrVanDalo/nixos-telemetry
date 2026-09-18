@@ -36,7 +36,7 @@ print("Log fan-out verified: source -> target-1 AND source -> target-2 (host.nam
 # ── metrics: source -> target-1 AND source -> target-2 ──────────────────
 # Neither target has a local metric source (no telegraf/netdata), so every
 # metric reaching them must have arrived over OTLP from `source`. The
-# metricstransform processor on `source` tags metrics host_name="source";
+# metricstransform/host_name processor on `source` tags metrics host_name="source";
 # that label survives the hop, so we can confirm the source directly.
 # prometheus-internal metrics (e.g. `up`) lack the label.
 for name, target in (("target-1", target1), ("target-2", target2)):

@@ -31,16 +31,20 @@ host.wait_until_succeeds(
     timeout=20,
 )
 journal = host.succeed("journalctl -u opentelemetry-collector -b --no-pager -o cat")
-assert "host.name=telemetry" in journal, (
-    "log from container (host.name=telemetry) not found in host's collector journal"
-)
 assert "container_name=telemetry" in journal, (
     "container_name label from alloy not present in host's collector journal"
 )
 assert "is_container=true" in journal, (
     "is_container label from alloy not present in host's collector journal"
 )
-print("container log forwarding verified: telemetry -> host (host.name=telemetry, container_name=telemetry, is_container=true)")
+# the container stamps no hostname of its own (alloy sets no host_name
+# rule, the container runs no collector), so the receiving HOST collector
+# fills the unset host.name with its own hostname (override=false) —
+# identity still travels via container_name.
+assert "host.name=host" in journal, (
+    "receiving host collector did not stamp host.name=host onto container logs"
+)
+print("container log forwarding verified: telemetry -> host (container_name=telemetry, is_container=true, host.name=host)")
 
 # ── metrics pipeline infrastructure (wired, scraped) ──────────────────
 # Verify the metrics pipeline is wired: collector's prometheus exporter is

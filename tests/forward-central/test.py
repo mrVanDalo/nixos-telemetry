@@ -31,7 +31,7 @@ print("Log forwarded source -> sink verified (host.name=source)")
 
 # ── metrics: source -> sink ───────────────────────────────────────────
 # `sink` has no local metric source (no telegraf/netdata), so every metric
-# reaching it must have arrived over OTLP from `source`. The metricstransform
+# reaching it must have arrived over OTLP from `source`. The metricstransform/host_name
 # processor on `source` tags metrics host_name="source"; that label survives
 # the hop (add_label does not overwrite an existing label), so we can confirm
 # the source directly. prometheus-internal metrics (e.g. `up`) lack the label.

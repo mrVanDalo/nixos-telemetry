@@ -141,12 +141,11 @@ in
             extraConfig = {
               global_tags = lib.mkMerge [
                 {
-                  instance_name = config.networking.hostName; # this will end up as `instance` label  in  prometheus
+                  host_name = config.networking.hostName;
                   # load-bearing for shared-net containers: their collector is
                   # disabled, so the host collector's add-if-missing stamp would
                   # relabel every container metric with the host's hostname.
                   # Stamped here from the container's own hostname instead.
-                  host_name = config.networking.hostName;
                 }
                 # container identity, only when this system declared itself
                 # a container (telemetry.isContainer)

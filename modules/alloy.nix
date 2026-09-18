@@ -77,14 +77,15 @@
             replacement   = "session.scope"
           }
 
-          rule {
-            source_labels = ["__journal__hostname"]
-            target_label  = "instance_name"
-          }
-          rule {
-            source_labels = ["__journal__hostname"]
-            target_label  = "host_name"
-          }
+          ${lib.optionalString (!config.telemetry.isContainer) ''
+            // host_name only on real hosts: containers carry their identity
+            // via container_name/is_container and the collector does not
+            // stamp a hostname for them either.
+            rule {
+              source_labels = ["__journal__hostname"]
+              target_label  = "host_name"
+            }
+          ''}
           ${lib.optionalString config.telemetry.isContainer ''
             rule {
               source_labels = ["__journal__hostname"]
