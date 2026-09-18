@@ -24,7 +24,7 @@ Without a matching pair the collector has nothing to do and will not start.
 
 ## Example setups
 
-Here are some Examples which can be combined as you like.
+Here are some examples which can be combined as you like.
 
 ### Metrics forwarded to a remote OTLP sink
 
@@ -233,7 +233,106 @@ each collector, e.g.
 [telemetry.telegraf.autowire.docker.enable](./OPTIONS.md#telemetrytelegrafautowiredockerenable)
 from the example above.
 
-## labels
+## Containers
+
+Containers are labeled `is_container = true` and `container_name = <name>` in
+their telemetry. We provide prepared NixOS modules to handle both network modes
+(`privateNetwork` true or false) — import the matching one into the container's
+config.
+
+### Private-network containers
+
+`privateNetwork = true` — the container has its own network namespace and
+otherwise works like a normal host.
+
+```mermaid
+graph TD
+    subgraph Host["Host (192.168.100.10)"]
+        HostOTel["OpenTelemetry<br/>Collector"]
+        Prometheus["Prometheus<br/>(metrics storage)"]
+        Loki["Loki<br/>(logs storage)"]
+        subgraph Container["Container (192.168.100.11)"]
+            Alloy["Alloy"]
+            Telegraf["Telegraf"]
+            ContainerOTel["OpenTelemetry<br/>Collector"]
+        end
+    end
+    Alloy --> ContainerOTel
+    Telegraf --> ContainerOTel
+    ContainerOTel --> HostOTel
+    HostOTel --> Prometheus
+    HostOTel --> Loki
+```
+
+Import `nixosModules.telemetry-container-private-network` (the default module
+with small changes) into the container's config; the container ships its
+telemetry over OTLP to the host's collector:
+
+```nix
+# host
+telemetry.enable = true;
+telemetry.alloy.enable = true;
+telemetry.opentelemetry.receiver.endpoint = "192.168.100.10:4317";
+telemetry.loki.enable = true;
+telemetry.prometheus.enable = true;
+
+# container
+containers.mycontainer = {
+  privateNetwork = true; # <- indicates that it's a private network container
+  hostAddress = "192.168.100.10";
+  localAddress = "192.168.100.11";
+  config = {
+    imports = [ nixos-telemetry.nixosModules.telemetry-container-private-network ];
+    telemetry.alloy.enable = true;
+    telemetry.telegraf.enable = true;
+    telemetry.opentelemetry.exporter.endpoints.host = "192.168.100.10:4317";
+  };
+};
+```
+
+### Shared-network containers
+
+`privateNetwork = false` — the container shares the host's network namespace.
+
+```mermaid
+graph TD
+    subgraph Host["Host"]
+        HostOTel["OpenTelemetry<br/>Collector"]
+        Prometheus["Prometheus<br/>(metrics storage)"]
+        Loki["Loki<br/>(logs storage)"]
+        subgraph Container["Container"]
+            Alloy["Alloy"]
+            Telegraf["Telegraf"]
+        end
+    end
+    Alloy --> HostOTel
+    Telegraf --> HostOTel
+    HostOTel --> Prometheus
+    HostOTel --> Loki
+```
+
+To avoid port clashes, its agents push telemetry directly to the host's
+OpenTelemetry collector over the shared loopback; import
+`nixosModules.telemetry-container-shared-network` into the container's config.
+
+```nix
+# host
+telemetry.enable = true;
+telemetry.loki.enable = true;
+telemetry.prometheus.enable = true;
+
+# container
+containers.mycontainer = {
+  privateNetwork = false; # <- indicates that it's a shared network container
+  config = {
+    imports = [ nixos-telemetry.nixosModules.telemetry-container-shared-network ];
+    telemetry.alloy.enable = true;
+    telemetry.telegraf.enable = true;
+  };
+};
+```
+
+## Labels
 
 Here are labels, which we try to always set.
 

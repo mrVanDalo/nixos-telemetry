@@ -44,8 +44,8 @@ _Declared by:_
 
 How the initial admin account access is configured:
 
-- `anonymous`: anonymous access is enabled with the Viewer role, so dashboards
-  can be viewed without logging in.
+- `anonymous`: anonymous access is enabled with full Admin role, so everything
+  can be used without logging in.
 - `autogenerate`: a random admin password is generated on first start and stored
   in a file referenced via `$__file{}`. No anonymous access.
 - `firstLoginChange`: the default admin credentials are used and Grafana forces
@@ -110,6 +110,23 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
 
+## telemetry.isContainer
+
+Set inside a container&#39;s evaluation to declare &#34;I am a container&#34;.
+When true, all agents stamp container identity onto their telemetry: alloy adds
+the `container_name` / `is_container` labels to journal logs, telegraf adds them
+to `global_tags`, and netdata gets them as host labels plus receiver-side scrape
+labels on every metric (container_name defaults to the container&#39;s
+hostname).
+
+_Type:_ `boolean`
+
+_Default:_ `false`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/containers.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/containers.nix)
+
 ## telemetry.isSharedNetworkContainer
 
 Set inside a container&#39;s evaluation to declare &#34;I am a shared-network
@@ -169,7 +186,12 @@ _Declared by:_
 
 ## telemetry.netdata.enable
 
-enable netdata to collect metrics.
+Whether to start netdata to collect metrics.
+
+Netdata is only started on normal machines and on private-network
+nixos-containers. It is force-disabled inside sharedNetworkContainer, because it
+opens a port for scraping there -&gt; port clashes, and its metrics cannot reach
+the host collector.
 
 _Type:_ `boolean`
 
@@ -181,7 +203,9 @@ _Declared by:_
 
 ## telemetry.opentelemetry.exporter.debug
 
-enable debug exporter.
+Write telemetry of the given signal to the collector&#39;s log at the verbosity
+the debug exporter is built with (for debugging the pipeline). Use sparingly, it
+can produce a lot of output.
 
 _Type:_ `null or one of "logs", "metrics"`
 
@@ -212,7 +236,8 @@ _Declared by:_
 
 ## telemetry.opentelemetry.receiver.endpoint
 
-endpoint to receive the opentelementry collector data from other collectors
+OTLP/gRPC endpoint to receive telemetry from other collectors, e.g. from
+`telemetry.opentelemetry.exporter.endpoints` on a remote machine.
 
 _Type:_ `null or string`
 
@@ -303,8 +328,9 @@ _Declared by:_
 
 ## telemetry.prometheus.enable
 
-enable prometheus and configure it to scrape opentelemetry collector metrics (in
-case `telemetry.enable = true`).
+Enable Prometheus as a metrics storage backend. When combined with
+`telemetry.enable`, Prometheus scrapes the metrics the OpenTelemetry collector
+exposes.
 
 _Type:_ `boolean`
 
@@ -316,8 +342,8 @@ _Declared by:_
 
 ## telemetry.prometheus.retentionTime
 
-retention time of prometheus data. If you want to serialize a really long time,
-use thanos.
+How long Prometheus retains collected metrics before deleting them. If you want
+to store metrics for a really long time, use thanos.
 
 _Type:_ `string`
 
@@ -546,7 +572,7 @@ _Declared by:_
 
 ## telemetry.telegraf.enable
 
-enable telegraf to collect metrics.
+Enable Telegraf to collect host metrics.
 
 _Type:_ `boolean`
 

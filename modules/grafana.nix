@@ -46,8 +46,8 @@
       default = "firstLoginChange";
       description = ''
         How the initial admin account access is configured:
-        - `anonymous`: anonymous access is enabled with the Viewer role,
-          so dashboards can be viewed without logging in.
+        - `anonymous`: anonymous access is enabled with full Admin role,
+          so everything can be used without logging in.
         - `autogenerate`: a random admin password is generated on first
           start and stored in a file referenced via `$__file{}`.
           No anonymous access.

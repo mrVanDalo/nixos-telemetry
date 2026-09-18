@@ -29,15 +29,27 @@ with types;
     # pipeline fragments (receivers/exporters/processors) are only created when both exist,
     # so the OTel collector never sees a pipeline with missing receivers or exporters.
     pipelines.metrics.hasReceivers = mkOption {
+      type = bool;
+      readOnly = true;
+      internal = true;
       description = "Internal: at least one metrics receiver is configured.";
     };
     pipelines.metrics.hasExporters = mkOption {
+      type = bool;
+      readOnly = true;
+      internal = true;
       description = "Internal: at least one metrics exporter is configured.";
     };
     pipelines.logs.hasReceivers = mkOption {
+      type = bool;
+      readOnly = true;
+      internal = true;
       description = "Internal: at least one logs receiver is configured.";
     };
     pipelines.logs.hasExporters = mkOption {
+      type = bool;
+      readOnly = true;
+      internal = true;
       description = "Internal: at least one logs exporter is configured.";
     };
     pipelines.anyComplete = mkOption {

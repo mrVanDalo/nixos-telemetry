@@ -35,7 +35,7 @@ in
         type = lib.types.bool;
         default = false;
         description = ''
-          enable telegraf to collect metrics.
+          Enable Telegraf to collect host metrics.
         '';
       };
       inputs.procstat.pattern = mkOption {

@@ -8,15 +8,17 @@ with types;
         type = bool;
         default = false;
         description = ''
-          enable prometheus and configure it to scrape opentelemetry collector metrics
-          (in case `telemetry.enable = true`).
+          Enable Prometheus as a metrics storage backend. When combined with
+          `telemetry.enable`, Prometheus scrapes the metrics the OpenTelemetry
+          collector exposes.
         '';
       };
       retentionTime = mkOption {
         type = str;
         default = "30d";
         description = ''
-          retention time of prometheus data. If you want to serialize a really long time, use thanos.
+          How long Prometheus retains collected metrics before deleting them.
+          If you want to store metrics for a really long time, use thanos.
         '';
       };
     };

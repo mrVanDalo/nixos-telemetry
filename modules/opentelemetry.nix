@@ -12,7 +12,10 @@ with types;
       type = nullOr str;
       default = null;
       example = "0.0.0.0:4317";
-      description = "endpoint to receive the opentelementry collector data from other collectors";
+      description = ''
+        OTLP/gRPC endpoint to receive telemetry from other collectors, e.g.
+        from `telemetry.opentelemetry.exporter.endpoints` on a remote machine.
+      '';
     };
     exporter.endpoints = mkOption {
       type = attrsOf str;
@@ -34,7 +37,11 @@ with types;
         "metrics"
       ]);
       default = null;
-      description = "enable debug exporter.";
+      description = ''
+        Write telemetry of the given signal to the collector's log at the
+        verbosity the debug exporter is built with (for debugging the
+        pipeline). Use sparingly, it can produce a lot of output.
+      '';
     };
   };
 
