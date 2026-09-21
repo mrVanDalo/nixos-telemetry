@@ -23,6 +23,30 @@
 
   config = lib.mkMerge [
 
+    # warning: alloy in a shared-network container
+    # --------------------------------------------
+    # alloy opens its HTTP UI on :12345; in a shared network namespace
+    # that port belongs to the host and clashes (e.g. with a host alloy).
+    (lib.mkIf
+      (
+        config.telemetry.enable
+        && config.telemetry.alloy.enable
+        && config.telemetry.isSharedNetworkContainer
+      )
+      {
+        warnings = [
+          ''
+            telemetry: alloy is enabled inside a shared-network container.
+            Alloy opens its HTTP
+            UI on :12345, which clashes with the host's network namespace
+            (e.g. a host alloy). Offset the port via
+            services.alloy.extraFlags or switch the container to
+            privateNetwork.
+          ''
+        ];
+      }
+    )
+
     # opentelemetry shipment
     # -----------------------
     (lib.mkIf

@@ -15,9 +15,9 @@ with types;
           Whether to start netdata to collect metrics.
 
           Netdata is only started on normal machines and on private-network
-          nixos-containers. It is force-disabled inside sharedNetworkContainer,
-          because it opens a port for scraping there -> port clashes, and its
-          metrics cannot reach the host collector.
+          nixos-containers. Inside shared-network containers it binds a port
+          for scraping, which clashes with the host - enabling it there
+          triggers a warning.
         '';
 
       };
@@ -34,37 +34,53 @@ with types;
 
   config = mkMerge [
 
-    # configure netdata
-    # -----------------
+    # warning: netdata in a shared-network container
+    # ----------------------------------------------
+    # netdata binds :19999 for its scrape endpoint; in a shared network
+    # namespace that port belongs to the host (clash), and the host
+    # collector cannot scrape into the container's netns anyway.
     (mkIf
       (
         config.telemetry.enable
         && config.telemetry.netdata.enable
-        # We don't start netdata in a sharedNetworkContainer, because it opens a port for scraping
-        # -> port clashes
-        && !config.telemetry.isSharedNetworkContainer
+        && config.telemetry.isSharedNetworkContainer
       )
       {
-        # https://docs.netdata.cloud/daemon/config/
-        services.netdata = {
-          enable = lib.mkDefault true;
-          config = {
-            global = {
-              "memory mode" = "ram";
-            };
-          };
-        };
+        warnings = [
+          ''
+            telemetry: netdata is enabled inside a shared-network container
+            (telemetry.isSharedNetworkContainer = true). Netdata binds
+            :${toString config.telemetry.ports.netdata} for scraping, which clashes with the host's
+            network namespace, and its metrics cannot reach the host
+            collector (pull-only endpoint). Disable telemetry.netdata or
+            switch the container to privateNetwork.
+          ''
+        ];
       }
     )
+
+    # configure netdata
+    # -----------------
+    (mkIf (config.telemetry.enable && config.telemetry.netdata.enable) {
+      # https://docs.netdata.cloud/daemon/config/
+      services.netdata = {
+        enable = lib.mkDefault true;
+        config = {
+          global = {
+            "memory mode" = "ram";
+          };
+        };
+      };
+    })
 
     # container identity on every scraped netdata metric
     # -------------------------------------------------
     # netdata's prometheus endpoint cannot add per-metric host labels, so
     # when this (netdata-enabled) host is a container the collector's
     # scrape attaches the identity to all metrics of the job. In
-    # shared-network containers netdata itself is force-disabled (its
-    # metrics cannot reach the host collector), so this only fires for
-    # private-network containers with their own collector.
+    # shared-network containers netdata triggers a warning instead
+    # (its metrics cannot reach the host collector), so this only
+    # fires for private-network containers with their own collector.
     (mkIf
       (
         config.telemetry.enable

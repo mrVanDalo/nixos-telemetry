@@ -192,9 +192,8 @@ _Declared by:_
 Whether to start netdata to collect metrics.
 
 Netdata is only started on normal machines and on private-network
-nixos-containers. It is force-disabled inside sharedNetworkContainer, because it
-opens a port for scraping there -&gt; port clashes, and its metrics cannot reach
-the host collector.
+nixos-containers. Inside shared-network containers it binds a port for scraping,
+which clashes with the host - enabling it there triggers a warning.
 
 _Type:_ `boolean`
 

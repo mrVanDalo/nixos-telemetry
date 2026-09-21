@@ -162,11 +162,6 @@
               # it would bind-clash on :19999 anyway. Telegraf covers metrics.
               # Re-enabling requires lib.mkOverride 49 — a deliberate act.
               services.netdata.enable = lib.mkForce false;
-              # offset the container's alloy UI so it cannot clash with a host
-              # alloy on :12345
-              services.alloy.extraFlags = lib.mkDefault [
-                "--server.http.listen-addr=127.0.0.1:12346"
-              ];
 
               # todo : add this again in a while
               #services.journald.settings.Journal.SystemMaxUse = lib.mkDefault "1G";
