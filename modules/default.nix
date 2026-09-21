@@ -61,14 +61,18 @@ with types;
   };
 
   imports = [
+    # collectors
+    ./collectors/alloy.nix
+    ./collectors/netdata.nix
+    ./collectors/telegraf.nix
+    # storage
+    ./storage/loki.nix
+    ./storage/prometheus.nix
+    # ui
+    ./ui/grafana.nix
+    # plumbing
     ./opentelemetry.nix
-    ./alloy.nix
-    ./loki.nix
-    ./telegraf.nix
-    ./prometheus.nix
-    ./netdata.nix
     ./ports.nix
-    ./grafana.nix
     ./containers.nix
     ./renamed.nix
   ];

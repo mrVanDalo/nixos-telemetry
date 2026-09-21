@@ -111,7 +111,7 @@ with types;
           # labels as log attributes. Copy the per-record `host_name` onto
           # the resource as `host.name` (records without `host_name` — e.g.
           # OTLP-received logs that already carry the right resource — are
-          # untouched). loki.nix promotes resource `host.name` to the
+          # untouched). storage/loki.nix promotes resource `host.name` to
           # `host_name` index label.
           "transform/host_name".log_statements = [
             {

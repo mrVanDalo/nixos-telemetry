@@ -9,7 +9,7 @@ _Default:_ `false`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/alloy.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/alloy.nix)
 
 ## telemetry.autowire.enable
 
@@ -57,7 +57,7 @@ _Default:_ `"firstLoginChange"`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/ui/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/ui/grafana.nix)
 
 ## telemetry.grafana.autogenerateSecretKey
 
@@ -71,7 +71,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/ui/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/ui/grafana.nix)
 
 ## telemetry.grafana.enable
 
@@ -84,7 +84,7 @@ _Default:_ `false`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/ui/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/ui/grafana.nix)
 
 ## telemetry.grafana.http_addr
 
@@ -96,7 +96,7 @@ _Default:_ `"127.0.0.1"`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/ui/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/ui/grafana.nix)
 
 ## telemetry.grafana.http_port
 
@@ -108,7 +108,7 @@ _Default:_ `3000`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/grafana.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/ui/grafana.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/ui/grafana.nix)
 
 ## telemetry.isContainer
 
@@ -172,7 +172,7 @@ _Example:_ `0.97`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/storage/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/storage/loki.nix)
 
 ## telemetry.loki.enable
 
@@ -185,7 +185,7 @@ _Default:_ `false`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/storage/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/storage/loki.nix)
 
 ## telemetry.netdata.enable
 
@@ -201,7 +201,7 @@ _Default:_ `false`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/netdata.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/netdata.nix)
 
 ## telemetry.opentelemetry.exporter.debug
 
@@ -262,7 +262,7 @@ _Default:_ `3500`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/alloy.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/alloy.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/alloy.nix)
 
 ## telemetry.ports.loki
 
@@ -275,7 +275,7 @@ _Default:_ `3100`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/loki.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/storage/loki.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/storage/loki.nix)
 
 ## telemetry.ports.mongodb
 
@@ -300,7 +300,7 @@ _Default:_ `19999`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/netdata.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/netdata.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/netdata.nix)
 
 ## telemetry.ports.prometheus
 
@@ -313,7 +313,7 @@ _Default:_ `8090`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/storage/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/storage/prometheus.nix)
 
 ## telemetry.ports.telegraf
 
@@ -326,7 +326,7 @@ _Default:_ `8088`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.prometheus.enable
 
@@ -340,7 +340,7 @@ _Default:_ `false`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/storage/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/storage/prometheus.nix)
 
 ## telemetry.prometheus.retentionTime
 
@@ -353,7 +353,7 @@ _Default:_ `"30d"`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/storage/prometheus.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/storage/prometheus.nix)
 
 ## telemetry.telegraf.autowire.chrony.enable
 
@@ -365,7 +365,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.docker.enable
 
@@ -377,7 +377,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.elasticsearch.enable
 
@@ -390,7 +390,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.fail2ban.enable
 
@@ -402,7 +402,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.libvirt.enable
 
@@ -414,7 +414,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.memcached.enable
 
@@ -426,7 +426,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.mongodb.enable
 
@@ -438,7 +438,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.mysql.enable
 
@@ -450,7 +450,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.nginx.enable
 
@@ -462,7 +462,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.ntp.enable
 
@@ -474,7 +474,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.nvidia.enable
 
@@ -486,7 +486,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.podman.enable
 
@@ -498,7 +498,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.prometheus.enable
 
@@ -510,7 +510,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.rabbitmq.enable
 
@@ -522,7 +522,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.smartd.enable
 
@@ -534,7 +534,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.varnish.enable
 
@@ -546,7 +546,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.wireless.enable
 
@@ -558,7 +558,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.autowire.zfs.enable
 
@@ -570,7 +570,7 @@ _Default:_ `true`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.enable
 
@@ -582,7 +582,7 @@ _Default:_ `false`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
 
 ## telemetry.telegraf.inputs.procstat.pattern
 
@@ -596,4 +596,4 @@ _Default:_ `null`
 
 _Declared by:_
 
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/collectors/telegraf.nix)
