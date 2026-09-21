@@ -7,7 +7,8 @@
 # because a shared-network container exists. The container's alloy UI port
 # is moved off :12345 (as the shared-network warning recommends) because a
 # host alloy occupies the default port.
-{ self, ... }:
+
+{ self, lib, ... }:
 
 {
   perSystem =
@@ -34,6 +35,11 @@
             opentelemetry.exporter.debug = "logs";
           };
 
+          # the nested nspawn container boots a full NixOS inside the VM;
+          # give it ample headroom on slow/emulated (TCG) CI machines
+          # (upstream nixos-containers defaults to 1min).
+          systemd.services."container@telemetry".serviceConfig.TimeoutStartSec = lib.mkForce "10min";
+
           # the container under test: imports ONLY the shared-net module —
           # everything else must come from the module's defaults plus the
           # explicit agent enables. With privateNetwork = false the
@@ -50,7 +56,6 @@
               nix.enable = false;
 
               telemetry = {
-                enable = true;
                 alloy.enable = true; # logs source inside the container
                 telegraf.enable = true; # metrics source inside the container
               };

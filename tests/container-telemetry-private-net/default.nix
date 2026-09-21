@@ -1,11 +1,11 @@
 # Goal:
 # verify `nixosModules.telemetry-container-private-network` inside a NixOS declarative
-# (systemd-nspawn) container: the module's wiring defaults (telemetry.enable +
-# journald cap) apply inside the container and the container ships its logs
+# (systemd-nspawn) container: the module's wiring defaults (telemetry.enable)
+# apply inside the container and the container ships its logs
 # (alloy journal) and metrics (telegraf) over OTLP to the OpenTelemetry
 # collector on the host system. The agents (alloy, telegraf) are enabled
 # explicitly in the test — the module wires, it does not enable apps.
-{ self, ... }:
+{ self, lib, ... }:
 
 {
   perSystem =
@@ -30,6 +30,11 @@
             };
             prometheus.enable = true;
           };
+
+          # the nested nspawn container boots a full NixOS inside the VM;
+          # give it ample headroom on slow/emulated (TCG) CI machines
+          # (upstream nixos-containers defaults to 1min).
+          systemd.services."container@telemetry".serviceConfig.TimeoutStartSec = lib.mkForce "10min";
 
           # the container under test: imports ONLY the container module
           # plus the exporter endpoint pointing at the host — everything

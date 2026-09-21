@@ -55,6 +55,10 @@ for label in [
 ]:
     assert label in attrs, f"missing label '{label}' in {attrs.keys()}"
 
+assert attrs["host_name"] == "test-host", (
+    f"unexpected host_name: {attrs['host_name']}"
+)
+
 # verify human-readable priority_label
 valid_priorities = [
     "emerg",

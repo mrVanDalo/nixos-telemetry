@@ -163,7 +163,7 @@
         }
     )
 
-    # admin access: anonymous viewer access
+    # admin access: anonymous admin access
     # -------------------------------------
     (lib.mkIf
       (

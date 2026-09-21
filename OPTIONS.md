@@ -191,9 +191,12 @@ _Declared by:_
 
 Whether to start netdata to collect metrics.
 
-Netdata is only started on normal machines and on private-network
-nixos-containers. Inside shared-network containers it binds a port for scraping,
-which clashes with the host - enabling it there triggers a warning.
+Netdata&#39;s prometheus endpoint is pull-only, so it only works where the
+collector can scrape it: normal machines and private-network nixos-containers.
+The `telemetry-container-shared-network` module therefore disables netdata with
+`lib.mkForce`; enabling it inside a shared-network container triggers a warning
+(its scrape port belongs to the host namespace and the host collector cannot
+scrape into the container).
 
 _Type:_ `boolean`
 

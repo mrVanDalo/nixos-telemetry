@@ -14,10 +14,12 @@ with types;
         description = ''
           Whether to start netdata to collect metrics.
 
-          Netdata is only started on normal machines and on private-network
-          nixos-containers. Inside shared-network containers it binds a port
-          for scraping, which clashes with the host - enabling it there
-          triggers a warning.
+          Netdata's prometheus endpoint is pull-only, so it only works where the
+          collector can scrape it: normal machines and private-network nixos-containers.
+          The `telemetry-container-shared-network` module therefore disables netdata
+          with `lib.mkForce`; enabling it inside a shared-network container triggers a
+          warning (its scrape port belongs to the host namespace and the host collector
+          cannot scrape into the container).
         '';
 
       };
@@ -48,9 +50,8 @@ with types;
       {
         warnings = [
           ''
-            telemetry: netdata is enabled inside a shared-network container
-            (telemetry.isSharedNetworkContainer = true). Netdata binds
-            :${toString config.telemetry.ports.netdata} for scraping, which clashes with the host's
+            telemetry: netdata is enabled inside a shared-network container. 
+            Netdata binds :19999 for scraping, which clashes with the host's
             network namespace, and its metrics cannot reach the host
             collector (pull-only endpoint). Disable telemetry.netdata or
             switch the container to privateNetwork.
@@ -73,46 +74,20 @@ with types;
       };
     })
 
-    # container identity on every scraped netdata metric
-    # -------------------------------------------------
-    # netdata's prometheus endpoint cannot add per-metric host labels, so
-    # when this (netdata-enabled) host is a container the collector's
-    # scrape attaches the identity to all metrics of the job. In
-    # shared-network containers netdata triggers a warning instead
-    # (its metrics cannot reach the host collector), so this only
-    # fires for private-network containers with their own collector.
-    (mkIf
-      (
-        config.telemetry.enable
-        && config.telemetry.isContainer
-        && !config.telemetry.isSharedNetworkContainer
-        && config.telemetry.netdata.enable
-        && config.telemetry.pipelines.metrics.hasExporters
-      )
-      {
-        # container identity as netdata host labels: visible on the dashboard,
-        # API (`/api/v1/info`) and health entities. Note: the allmetrics
-        # endpoint attaches these only to the `netdata_info` metric, not to
-        # every metric — the receiver-side labels below do that job.
-        services.netdata.config."host labels" = mkIf config.telemetry.isContainer {
-          container_name = config.networking.hostName;
-          is_container = "true";
-        };
+    # container identity as netdata host labels
+    # -----------------------------------------
+    # netdata host labels expose the container identity on the netdata
+    # dashboard, API (`/api/v1/info`) and health entities. Note: the
+    # allmetrics endpoint attaches them only to the `netdata_info`
+    # metric, not to every metric — attaching the identity to every
+    # scraped metric is the receiver's job (block below).
+    (mkIf (config.telemetry.enable && config.telemetry.isContainer && config.telemetry.netdata.enable) {
+      services.netdata.config."host labels" = mkIf config.telemetry.isContainer {
+        container_name = config.networking.hostName;
+        is_container = "true";
+      };
 
-        services.opentelemetry-collector.settings.receivers."prometheus/netdata".config.scrape_configs =
-          mkAfter
-            [
-              {
-                job_name = "netdata";
-                static_configs.labels = {
-                  container_name = config.networking.hostName;
-                  is_container = "true";
-                };
-              }
-            ]
-            config.services.opentelemetry-collector.settings.receivers."prometheus/netdata".config.scrape_configs;
-      }
-    )
+    })
 
     # wire netdata with opentelemetry
     # -------------------------------
@@ -133,7 +108,22 @@ with types;
               scrape_interval = "10s";
               metrics_path = "/api/v1/allmetrics";
               params.format = [ "prometheus" ];
-              static_configs = [ { targets = [ "127.0.0.1:${toString config.telemetry.ports.netdata}" ]; } ];
+              # container identity as labels on the one scrape target: only private-network
+              # containers (shared-network containers get a warning instead — their metrics
+              # cannot reach the host collector, see the warning block above)
+              static_configs = [
+                (
+                  {
+                    targets = [ "127.0.0.1:${toString config.telemetry.ports.netdata}" ];
+                  }
+                  // (lib.optionalAttrs (config.telemetry.isContainer && !config.telemetry.isSharedNetworkContainer) {
+                    labels = {
+                      container_name = config.networking.hostName;
+                      is_container = "true";
+                    };
+                  })
+                )
+              ];
             }
           ];
         };

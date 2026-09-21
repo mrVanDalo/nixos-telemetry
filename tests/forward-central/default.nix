@@ -49,8 +49,9 @@
               # the OTLP receiver is wired into the metrics pipeline, then scrapes
               # the collector's prometheus exporter.
               prometheus.enable = true;
-              # loki receives logs via the otlphttp/loki exporter, gated on
-              # logs.hasExporters (debug exporter) && logs.hasReceivers (receiver.endpoint).
+              # loki receives logs via the otlphttp/loki exporter, which the loki
+              # module wires when logs.hasReceivers is true; the receiving side
+              # additionally needs logs.hasExporters (provided here by the debug exporter).
               loki.enable = true;
             };
           };

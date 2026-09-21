@@ -251,6 +251,7 @@ graph TD
         HostOTel["OpenTelemetry<br/>Collector"]
         Prometheus["Prometheus<br/>(metrics storage)"]
         Loki["Loki<br/>(logs storage)"]
+        HostAlloy["Alloy<br/>(host journal)"]
         subgraph Container["Container (192.168.100.11)"]
             Alloy["Alloy"]
             Telegraf["Telegraf"]
@@ -262,6 +263,7 @@ graph TD
     ContainerOTel --> HostOTel
     HostOTel --> Prometheus
     HostOTel --> Loki
+    HostAlloy --> HostOTel
 ```
 
 Import `nixosModules.telemetry-container-private-network` (the default module
@@ -328,6 +330,9 @@ containers.mycontainer = {
     imports = [ nixos-telemetry.nixosModules.telemetry-container-shared-network ];
     telemetry.alloy.enable = true;
     telemetry.telegraf.enable = true;
+    # alloy defaults to port 12345, which is shared with the host —
+    # move the container's instance out of the way.
+    services.alloy.extraFlags = [ "--server.http.listen-addr=127.0.0.1:12346" ];
   };
 };
 ```

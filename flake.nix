@@ -133,10 +133,6 @@
             config = {
               telemetry.enable = lib.mkDefault true; # import this module should be convenient
 
-              # todo : add this again in a while
-              #services.journald.settings.Journal.SystemMaxUse = lib.mkDefault "1G";
-              #services.logrotate.checkConfig = false; # because uid 3000 does not exist in here
-
               # container identity: alloy stamps container_name/is_container
               # onto journal logs, telegraf onto metrics
               telemetry.isContainer = lib.mkDefault true;
@@ -148,6 +144,7 @@
           {
             imports = [ self.nixosModules.telemetry ];
             config = {
+              telemetry.enable = lib.mkDefault true; # import this module should be convenient
               # declares "I am a shared-network container": un-gates telegraf's
               # loopback output without a local sink; alloy's URL is hardcoded
               # to loopback already. Agents push to the host collector through
@@ -163,15 +160,21 @@
               # Re-enabling requires lib.mkOverride 49 — a deliberate act.
               services.netdata.enable = lib.mkForce false;
 
-              # todo : add this again in a while
-              #services.journald.settings.Journal.SystemMaxUse = lib.mkDefault "1G";
-              #services.logrotate.checkConfig = false; # because uid 3000 does not exist in here
-
               # hard-off: in a shared-net container the host collector is the
               # destination, a local collector would bind-clash with it.
               # Re-enabling requires lib.mkOverride 49 — a deliberate act.
               services.opentelemetry-collector.enable = lib.mkForce false;
             };
+          };
+
+        # deprecated alias: use telemetry-container-private-network instead
+        nixosModules.container-telemetry =
+          { ... }:
+          {
+            imports = [ self.nixosModules.telemetry-container-private-network ];
+            warnings = [
+              "nixosModules.container-telemetry is deprecated, use nixosModules.telemetry-container-private-network instead"
+            ];
           };
 
         nixosModules.default = self.nixosModules.telemetry;
