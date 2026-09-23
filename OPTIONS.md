@@ -117,10 +117,11 @@ When true, all agents stamp container identity onto their telemetry: alloy adds
 the `container_name` / `is_container` labels to journal logs, telegraf adds them
 to `global_tags`, and netdata gets them as host labels plus receiver-side scrape
 labels on every metric (container_name defaults to the container&#39;s
-hostname). No `host_name` is stamped inside the container: alloy omits the
-journal hostname label and the container&#39;s collector skips hostname
-detection. A receiving host collector (isContainer = false) still fills an unset
-host.name with its own hostname.
+hostname). Metrics carry `host_name` stamped by telegraf from the system&#39;s
+own hostname — also inside a container. Only logs go without `host_name` here:
+alloy omits the journal hostname label and the container&#39;s collector skips
+hostname detection. A receiving host collector (isContainer = false) still fills
+an unset host.name with its own hostname.
 
 _Type:_ `boolean`
 

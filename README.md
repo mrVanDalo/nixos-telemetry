@@ -343,9 +343,11 @@ Here are labels, which we try to always set. The _container_name_ and
 _is_container_ labels only apply to [containers](#containers).
 
 _host_name:_ The host name of the machine (usually `networking.hostName`).
-Stamped only by the machine's own agents when it is not a container; a receiving
-host collector fills an unset `host.name` with its own hostname. Containers
-carry their identity through _container_name_ / _is_container_.
+Metrics carry it stamped by telegraf from the system's own hostname — also
+inside a container. Logs go without it inside a container (alloy omits the
+journal hostname label); a receiving host collector fills an unset `host.name`
+with its own hostname. Containers carry their identity through
+_container_name_ / _is_container_.
 
 _container_name:_ The container name, only set for NixOS containers (set
 together with _is_container_).

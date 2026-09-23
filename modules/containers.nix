@@ -27,11 +27,12 @@
       alloy adds the `container_name` / `is_container` labels to journal
       logs, telegraf adds them to `global_tags`, and netdata gets them as
       host labels plus receiver-side scrape labels on every metric
-      (container_name defaults to the container's hostname). No `host_name`
-      is stamped inside the container: alloy omits the journal hostname
-      label and the container's collector skips hostname detection. A
-      receiving host collector (isContainer = false) still fills an unset
-      host.name with its own hostname.
+      (container_name defaults to the container's hostname). Metrics carry
+      `host_name` stamped by telegraf from the system's own hostname — also
+      inside a container. Only logs go without `host_name` here: alloy omits
+      the journal hostname label and the container's collector skips hostname
+      detection. A receiving host collector (isContainer = false) still fills
+      an unset host.name with its own hostname.
     '';
   };
 
@@ -57,19 +58,24 @@
     ) (lib.attrValues config.containers);
 
     warnings =
-      lib.mkIf
-        (
-          config.telemetry.pipelines.container.hasSharedNetworkContainer
-          && !config.telemetry.pipelines.logs.hasExporters
-          && !config.telemetry.pipelines.metrics.hasExporters
-        )
-        [
+      lib.optionals config.telemetry.enable (
+        lib.optional
+          (config.telemetry.pipelines.container.hasSharedNetworkContainer && !config.telemetry.pipelines.logs.hasExporters)
           ''
-            telemetry: shared-network container detected but no sink is enabled
-            (telemetry.loki.enable / telemetry.prometheus.enable). The host's
-            collector receivers stay closed and container agents' pushes are
-            refused — enable at least one sink.
+            telemetry: shared-network container detected but no logs sink is enabled
+            (telemetry.loki.enable). The host collector's logs receiver stays
+            closed and container alloy log pushes are refused — enable a logs
+            sink or disable logging in the container's agents.
           ''
-        ];
+        ++ lib.optional
+          (config.telemetry.pipelines.container.hasSharedNetworkContainer && !config.telemetry.pipelines.metrics.hasExporters)
+          ''
+            telemetry: shared-network container detected but no metrics sink is
+            enabled (telemetry.prometheus.enable). The host collector's metrics
+            receiver stays closed and container telegraf metric pushes are
+            refused — enable a metrics sink or disable metrics in the
+            container's agents.
+          ''
+      );
   };
 }
