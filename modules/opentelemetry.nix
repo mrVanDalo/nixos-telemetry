@@ -68,8 +68,6 @@ in
 
         processors = {
 
-          # todo  : add a tag for nixos-container name
-
           # https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourcedetectionprocessor/README.md
           "resourcedetection/system" = {
             detectors = [ "system" ];

@@ -126,19 +126,7 @@
         # agnostic ones like nixosModule and system-enumerating ones, although
         # those are more easily expressed in perSystem.
         nixosModules.telemetry = ./modules;
-        nixosModules.container-telemetry =
-          { lib, ... }:
-          {
-            imports = [ self.nixosModules.telemetry ];
-            config = {
-              telemetry.enable = lib.mkDefault true; # import this module should be convenient
-              telemetry.alloy.enable = lib.mkDefault true; # collect container journal logs
-              services.journald.extraConfig = "SystemMaxUse=1G"; # no need for storing a lot of logs.
-            };
-          };
-
         nixosModules.default = self.nixosModules.telemetry;
-
       };
     };
 }

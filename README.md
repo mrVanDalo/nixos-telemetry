@@ -237,9 +237,5 @@ from the example above.
 
 Here are labels, which we try to always set.
 
-_instance_name:_ Either the host name or the container name. Set on metrics (via
-telegraf `global_tags`) and on logs (via alloy journal relabel).
-
-_host_name:_ The host name, also for containers. Set on metrics (via the
-OpenTelemetry collector `metricstransform` processor) and on logs (via alloy
-journal relabel).
+_host_name:_ The host name. Set on metrics (via the OpenTelemetry collector
+`metricstransform` processor) and on logs (via alloy journal relabel).

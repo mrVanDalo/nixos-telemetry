@@ -44,7 +44,7 @@ assert attrs, "test log message not found in collector journal"
 # verify expected labels are present
 for label in [
     "unit",
-    "instance_name",
+    "host_name",
     "transport",
     "boot_id",
     "priority",
@@ -68,8 +68,8 @@ assert attrs["priority_label"] in valid_priorities, (
 )
 
 # verify hostname
-assert attrs["instance_name"] == "test-host", (
-    f"instance_name mismatch: {attrs['instance_name']}"
+assert attrs["host_name"] == "test-host", (
+    f"host_name mismatch: {attrs['host_name']}"
 )
 
 print(f"Verified log record attributes: {attrs}")

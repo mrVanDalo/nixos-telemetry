@@ -49,7 +49,7 @@ print("Grafana datasources verified: OTLP Loki present, Prometheus absent")
 # generate a known log message
 machine.succeed("systemd-cat -t test-marker echo 'hello-from-loki-grafana-test'")
 
-# In the OTLP pipeline, alloy's labels (job, instance_name, unit, ...) become
+# In the OTLP pipeline, alloy's labels (job, host_name, unit, ...) become
 # log-level attributes (structured metadata in Loki), NOT stream labels. Stream
 # labels come only from resource attributes:
 #   - host.name (from the resourcedetection/system processor)  -> host_name
