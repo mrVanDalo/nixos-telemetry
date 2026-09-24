@@ -93,11 +93,14 @@ in
     # ── register the prometheus/exporters receiver in the pipeline ──
     # a pipeline only exists when a sink is configured; without one the
     # receiver definition above would be inert (see telegraf.nix, netdata.nix)
-    (mkIf (config.telemetry.pipelines.metrics.hasSink && config.services.prometheus.exporters.node.enable) {
-      services.opentelemetry-collector.settings.service.pipelines.metrics.receivers = [
-        "prometheus/exporters"
-      ];
-    })
+    (mkIf
+      (config.telemetry.pipelines.metrics.hasSink && config.services.prometheus.exporters.node.enable)
+      {
+        services.opentelemetry-collector.settings.service.pipelines.metrics.receivers = [
+          "prometheus/exporters"
+        ];
+      }
+    )
 
     # ── autowire: nginx ──────────────────────────────────────────────
     (mkIf (cfg.autowire.nginx.enable && config.services.nginx.enable) {

@@ -177,10 +177,15 @@ alias points at the same module.
 
 ### Low-footprint import
 
-If you don't want to lock this flake's own inputs (flake-parts, devshell,
-treefmt-nix) into your `flake.lock`, declare the input as non-flake and import
-the modules directory directly — the modules are plain NixOS modules with no
-extra tooling dependencies:
+The flake uses
+[flake-parts partitions](https://flake.parts/options/flake-parts-partitions.html):
+development tooling (devshell, treefmt-nix) lives in the `nix/dev` and `nix/ci`
+subflakes, so only `flake-parts` and `nixpkgs` end up in your `flake.lock` when
+you depend on this flake — no extra lock entries from formatters or dev shells.
+
+If you don't want any lock entries at all, declare the input as non-flake and
+import the modules directory directly — the modules are plain NixOS modules with
+no extra tooling dependencies:
 
 ```nix
 nixos-telemetry = {

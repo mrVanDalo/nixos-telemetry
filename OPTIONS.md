@@ -284,6 +284,245 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
 
+## telemetry.prometheus-exporters.autowire.bind.enable
+
+Automatically enable the prometheus exporter with bind if the bind NixOS service
+is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.chrony.enable
+
+Automatically enable the prometheus exporter with chrony if the chrony NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.dovecot.enable
+
+Automatically enable the prometheus exporter with dovecot if the dovecot NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.elasticsearch.enable
+
+Automatically enable the prometheus exporter with elasticsearch if the
+elasticsearch NixOS service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.fail2ban.enable
+
+Automatically enable the prometheus exporter with fail2ban if the fail2ban NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.libvirt.enable
+
+Automatically enable the prometheus exporter with libvirt if the libvirt NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.mongodb.enable
+
+Automatically enable the prometheus exporter with mongodb if the mongodb NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.mysql.enable
+
+Automatically enable the prometheus exporter with mysql if the mysql NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.nginx.enable
+
+Automatically enable the prometheus exporter with nginx if the nginx NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.nvidia-gpu.enable
+
+Automatically enable the prometheus exporter with nvidia-gpu if the nvidia-gpu
+NixOS service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.postfix.enable
+
+Automatically enable the prometheus exporter with postfix if the postfix NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.postgres.enable
+
+Automatically enable the prometheus exporter with postgres if the postgres NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.redis.enable
+
+Automatically enable the prometheus exporter with redis if the redis NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.smartctl.enable
+
+Automatically enable the prometheus exporter with smartctl if the smartctl NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.unbound.enable
+
+Automatically enable the prometheus exporter with unbound if the unbound NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.varnish.enable
+
+Automatically enable the prometheus exporter with varnish if the varnish NixOS
+service is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.autowire.zfs.enable
+
+Automatically enable the prometheus exporter with zfs if the zfs NixOS service
+is set up.
+
+_Type:_ `boolean`
+
+_Default:_ `true`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
+## telemetry.prometheus-exporters.enable
+
+Enable prometheus exporters to scrape service-level metrics. The node and
+systemd exporters are always enabled when this is active; other exporters are
+automatically wired when their corresponding NixOS service is detected on the
+machine.
+
+Can be overridden per app, e.g.
+`telemetry.&#34;prometheus-exporters&#34;.autowire.nginx.enable`.
+
+_Type:_ `boolean`
+
+_Default:_ `false`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
+
 ## telemetry.prometheus.enable
 
 enable prometheus and configure it to scrape opentelemetry collector metrics (in
