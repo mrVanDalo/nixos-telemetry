@@ -6,3 +6,5 @@ trigger
 nix-flake-check.log
 
 result
+
+.direnv

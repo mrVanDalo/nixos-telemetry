@@ -2,6 +2,7 @@
   imports = [
     ./metrics
     ./log-pipeline
+    ./vector
     ./loki-grafana
     ./forward-central
     ./forward-chain

@@ -16,11 +16,11 @@ The collector starts automatically once a complete pipeline exists. A pipeline
 is complete when a source and a sink are both enabled for the same signal type.
 Without a matching pair the collector has nothing to do and will not start.
 
-| Signal    | Receivers (sources)                         | Exporters (sinks)                            |
-| --------- | ------------------------------------------- | -------------------------------------------- |
-| Metrics   | `telemetry.telegraf`, `telemetry.netdata`   | `telemetry.prometheus`                       |
-| Logs      | `telemetry.alloy`                           | `telemetry.loki`                             |
-| (Forward) | `telemetry.opentelemetry.receiver.endpoint` | `telemetry.opentelemetry.exporter.endpoints` |
+| Signal    | Receivers (sources)                                           | Exporters (sinks)                            |
+| --------- | ------------------------------------------------------------- | -------------------------------------------- |
+| Metrics   | `telemetry.telegraf`, `telemetry.netdata`, `telemetry.vector` | `telemetry.prometheus`                       |
+| Logs      | `telemetry.alloy`, `telemetry.vector`                         | `telemetry.loki`                             |
+| (Forward) | `telemetry.opentelemetry.receiver.endpoint`                   | `telemetry.opentelemetry.exporter.endpoints` |
 
 ## Example setups
 
@@ -172,8 +172,8 @@ module into the NixOS configuration where you want telemetry:
 
 `nixos-telemetry.nixosModules.default` is the only module you need to import: it
 is the super-module that pulls in every app (`opentelemetry`, `telegraf`,
-`alloy`, `loki`, `prometheus`, `netdata`, `grafana`). A `nixosModules.telemetry`
-alias points at the same module.
+`alloy`, `loki`, `prometheus`, `netdata`, `grafana`, `vector`). A
+`nixosModules.telemetry` alias points at the same module.
 
 ### Low-footprint import
 

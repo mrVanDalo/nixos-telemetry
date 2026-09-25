@@ -791,3 +791,17 @@ _Default:_ `null`
 _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
+
+## telemetry.vector.enable
+
+enable vector to collect journald logs and host metrics. Vector pushes both into
+the central OpenTelemetry collector (OTLP/HTTP), replacing `telemetry.alloy` and
+`telemetry.telegraf` for log and host-metric collection.
+
+_Type:_ `boolean`
+
+_Default:_ `false`
+
+_Declared by:_
+
+- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/vector.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/vector.nix)

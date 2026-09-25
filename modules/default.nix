@@ -65,6 +65,7 @@ with types;
     ./alloy.nix
     ./loki.nix
     ./telegraf.nix
+    ./vector.nix
     ./prometheus.nix
     ./prometheus-exporters.nix
     ./netdata.nix
@@ -78,6 +79,7 @@ with types;
       config.telemetry.telegraf.enable
       || config.telemetry.netdata.enable
       || config.telemetry."prometheus-exporters".enable
+      || config.telemetry.vector.enable
       || (config.telemetry.opentelemetry.receiver.endpoint != null);
 
     telemetry.pipelines.metrics.hasSink =
@@ -86,7 +88,9 @@ with types;
       || (config.telemetry.opentelemetry.exporter.debug == "metrics");
 
     telemetry.pipelines.logs.hasSource =
-      config.telemetry.alloy.enable || (config.telemetry.opentelemetry.receiver.endpoint != null);
+      config.telemetry.alloy.enable
+      || config.telemetry.vector.enable
+      || (config.telemetry.opentelemetry.receiver.endpoint != null);
 
     telemetry.pipelines.logs.hasSink =
       config.telemetry.loki.enable
