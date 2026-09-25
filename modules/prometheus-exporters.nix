@@ -17,7 +17,11 @@ let
     {
       inherit job_name;
       metrics_path = path;
-      scrape_interval = "10s";
+      # exporter scrapes can be slow under load (systemd exporter walks
+      # D-Bus for every unit); the prometheus default 10s timeout with a
+      # 10s interval leaves no headroom and drops those scrapes.
+      scrape_interval = "30s";
+      scrape_timeout = "25s";
       static_configs = [ { targets = [ "localhost:${toString port}" ]; } ];
     };
 

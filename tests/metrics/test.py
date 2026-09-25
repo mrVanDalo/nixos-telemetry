@@ -58,7 +58,7 @@ machine.wait_until_succeeds(
 print("node exporter metrics collected by prometheus")
 machine.wait_until_succeeds(
     """curl -sf -G http://127.0.0.1:9090/api/v1/query \
-        --data-urlencode 'query=count(systemd_n_units)' \
+        --data-urlencode 'query=count(systemd_unit_state)' \
         | grep -qv '"result":\\[\\]'""",
     timeout=120,
 )
