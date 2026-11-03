@@ -69,11 +69,15 @@ source.wait_until_succeeds(
 print("Local prometheus verified: collector -> prometheus (host_name=source)")
 
 # ── grafana has both datasources provisioned ──────────────────────────
+# Assert on the provisioned names: grafana only reports a plugin's
+# display name (`typeName`) when it resolves the plugin metadata, which
+# the NixOS module's `-homepath ${dataDir}` deployment does not do — it
+# falls back to the plugin id (`prometheus`, `loki`).
 source.wait_for_open_port(3000)
 datasources = source.succeed("curl -sf -u admin:admin http://127.0.0.1:3000/api/datasources")
+assert '"OTLP Prometheus"' in datasources, "OTLP Prometheus datasource not provisioned in Grafana"
 assert '"OTLP Loki"' in datasources, "OTLP Loki datasource not provisioned in Grafana"
-assert '"Prometheus"' in datasources, "Prometheus datasource not provisioned in Grafana"
-print("Grafana datasources verified: OTLP Loki + Prometheus present")
+print("Grafana datasources verified: OTLP Prometheus + OTLP Loki present")
 
 # ── collector isn't dropping data ─────────────────────────────────────
 journal = source.succeed("journalctl -u opentelemetry-collector --no-pager -n 80")

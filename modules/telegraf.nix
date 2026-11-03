@@ -70,7 +70,6 @@ in
             "wireless"
             "prometheus"
             "libvirt"
-            "varnish"
           ]
           (app: {
             enable = mkOption {
@@ -426,16 +425,6 @@ in
           libvirt_uri = "qemu:///system";
         };
         users.users.telegraf.extraGroups = [ "libvirtd" ];
-      })
-
-      # varnish metrics collection
-      # ---------------------------
-      (mkIf (cfg.autowire.varnish.enable && config.services.varnish.enable) {
-        services.telegraf.extraConfig.inputs.varnish = {
-          binary = "${config.services.varnish.package}/bin/varnishstat";
-          adm_binary = "${config.services.varnish.package}/bin/varnishadm";
-        };
-        users.users.telegraf.extraGroups = [ "varnish" ];
       })
     ]
   );

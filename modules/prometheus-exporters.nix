@@ -61,7 +61,6 @@ in
             "redis"
             "smartctl"
             "unbound"
-            "varnish"
             "zfs"
           ]
           (app: {
@@ -241,17 +240,6 @@ in
         (mkScrapeConfig {
           job_name = "libvirt";
           port = config.services.prometheus.exporters.libvirt.port;
-        })
-      ];
-    })
-
-    # ── autowire: varnish ────────────────────────────────────────────
-    (mkIf (cfg.autowire.varnish.enable && config.services.varnish.enable) {
-      services.prometheus.exporters.varnish.enable = mkDefault true;
-      services.opentelemetry-collector.settings.receivers."prometheus/exporters".config.scrape_configs = [
-        (mkScrapeConfig {
-          job_name = "varnish";
-          port = config.services.prometheus.exporters.varnish.port;
         })
       ];
     })

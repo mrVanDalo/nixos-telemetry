@@ -39,10 +39,12 @@ assert "default_theme=system" in grafana_config, (
 print("Grafana default_theme verified: system (follows browser/OS preference)")
 
 # ── grafana should have provisioned datasources ───────────────────────
-# loki datasource should be present (prometheus should NOT, it's not enabled)
+# loki datasource should be present (prometheus should NOT, it's not enabled).
+# Match on the provisioned names, not on grafana's plugin display names
+# (`typeName`): the NixOS module's deployment falls back to plugin ids.
 datasources = machine.succeed("curl -sf -u admin:admin http://127.0.0.1:3000/api/datasources")
 assert '"OTLP Loki"' in datasources, "OTLP Loki datasource not provisioned in Grafana"
-assert '"Prometheus"' not in datasources, "Prometheus datasource should not be provisioned"
+assert '"OTLP Prometheus"' not in datasources, "Prometheus datasource should not be provisioned"
 print("Grafana datasources verified: OTLP Loki present, Prometheus absent")
 
 # ── logs should flow through alloy → otel → loki ──────────────────────

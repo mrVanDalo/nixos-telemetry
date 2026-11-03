@@ -479,19 +479,6 @@ _Declared by:_
 
 - [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
 
-## telemetry.prometheus-exporters.autowire.varnish.enable
-
-Automatically enable the prometheus exporter with varnish if the varnish NixOS
-service is set up.
-
-_Type:_ `boolean`
-
-_Default:_ `true`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/prometheus-exporters.nix)
-
 ## telemetry.prometheus-exporters.autowire.zfs.enable
 
 Automatically enable the prometheus exporter with zfs if the zfs NixOS service
@@ -721,18 +708,6 @@ _Declared by:_
 ## telemetry.telegraf.autowire.smartd.enable
 
 Automatically scrape smartd metrics with telegraf if smartd is set up.
-
-_Type:_ `boolean`
-
-_Default:_ `true`
-
-_Declared by:_
-
-- [https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix](https://github.com/mrVanDalo/nixos-telemetry/tree/main/modules/telegraf.nix)
-
-## telemetry.telegraf.autowire.varnish.enable
-
-Automatically scrape varnish metrics with telegraf if varnish is set up.
 
 _Type:_ `boolean`
 
